@@ -6,10 +6,12 @@
 <title>2048 Premium</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-* { box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+* { box-sizing: border-box; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
 html, body { margin: 0; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-user-select: none; user-select: none; }
 
-/* Темы оформления */
+/* ==========================================================================
+   ЦВЕТОВЫЕ ПАЛИТРЫ (ТЕМЫ)
+   ========================================================================== */
 :root, body.dark {
     --bg: #0f172a;
     --panel: rgba(30, 41, 59, 0.7);
@@ -65,44 +67,49 @@ h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; backgro
 .btn:active { transform: scale(0.96); }
 
 .boardWrap { flex: 1; display: grid; place-items: center; min-height: 0; padding: 10px 0; }
-.board { width: min(90vw, 85dvh, 460px); aspect-ratio: 1; display: grid; gap: 10px; padding: 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 20px 40px var(--shadow); }
+.board { width: min(90vw, 85dvh, 460px); aspect-ratio: 1; display: grid; gap: 10px; padding: 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 20px 40px var(--shadow); will-change: transform; }
 
-.cell { width: 100%; height: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: clamp(16px, 6vw, 36px); border-radius: 16px; background: var(--empty); position: relative; }
-.tile { animation: spawn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-.tile.merged { animation: pop 0.2s ease-in-out; }
+.cell { width: 100%; height: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: clamp(18px, 6vw, 36px); border-radius: 16px; background: var(--empty); position: relative; }
+.tile { animation: spawn 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; box-shadow: 0 4px 10px rgba(0,0,0,0.15); will-change: transform, opacity; }
+.tile.merged { animation: pop 0.15s ease-in-out; }
 
-@keyframes spawn { 0% { transform: scale(0.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes spawn { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.12); } 100% { transform: scale(1); } }
 
 .controls { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 260px; margin: 10px auto 0 auto; }
 .ctrl-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text); border-radius: 16px; height: 54px; font-size: 22px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--shadow); touch-action: manipulation; }
 .ctrl-btn:active { transform: scale(0.92); background: var(--empty); }
 
-/* Стили плиток (Dark дефолт) */
-body.dark .v2 { background: #334155; color: #f8fafc; }
-body.dark .v4 { background: #475569; color: #f8fafc; }
-body.dark .v8 { background: #f97316; color: #ffffff; }
-body.dark .v16 { background: #ea580c; color: #ffffff; }
-body.dark .v32 { background: #ef4444; color: #ffffff; }
-body.dark .v64 { background: #dc2626; color: #ffffff; }
-body.dark .v128 { background: #06b6d4; color: #0f172a; box-shadow: 0 0 15px rgba(6,182,212,0.4); }
-body.dark .v256 { background: #0ea5e9; color: #ffffff; box-shadow: 0 0 20px rgba(14,165,233,0.4); }
-body.dark .v512 { background: #3b82f6; color: #ffffff; box-shadow: 0 0 25px rgba(59,130,246,0.5); }
-body.dark .v1024 { background: #6366f1; color: #ffffff; }
-body.dark .v2048 { background: #a855f7; color: #ffffff; box-shadow: 0 0 30px #a855f7; }
+/* ==========================================================================
+   СТИЛИ ПЛИТОК ДЛЯ ВСЕХ ТЕМ (ФИКС ИСЧЕЗНОВЕНИЯ КУБОВ)
+   ========================================================================== */
+/* DARK ТЕМА */
+body.dark .v2 { background: #334155; color: #f8fafc; } body.dark .v4 { background: #475569; color: #f8fafc; } body.dark .v8 { background: #f97316; color: #fff; } body.dark .v16 { background: #ea580c; color: #fff; } body.dark .v32 { background: #ef4444; color: #fff; } body.dark .v64 { background: #dc2626; color: #fff; } body.dark .v128 { background: #06b6d4; color: #0f172a; box-shadow: 0 0 12px rgba(6,182,212,0.4); } body.dark .v256 { background: #0ea5e9; color: #fff; box-shadow: 0 0 16px rgba(14,165,233,0.4); } body.dark .v512 { background: #3b82f6; color: #fff; box-shadow: 0 0 20px rgba(59,130,246,0.5); } body.dark .v1024 { background: #6366f1; color: #fff; } body.dark .v2048 { background: #a855f7; color: #fff; box-shadow: 0 0 25px #a855f7; }
 
-/* Остальные стили тем опущены ради экономии места, они работают как в прошлой версии */
+/* LIGHT ТЕМА */
+body.light .v2 { background: #e2e8f0; color: #334155; } body.light .v4 { background: #cbd5e1; color: #1e293b; } body.light .v8 { background: #ffedd5; color: #ea580c; } body.light .v16 { background: #fed7aa; color: #c2410c; } body.light .v32 { background: #fdba74; color: #9a3412; } body.light .v64 { background: #f97316; color: #fff; } body.light .v128 { background: #fca5a5; color: #991b1b; } body.light .v256 { background: #ef4444; color: #fff; } body.light .v512 { background: #93c5fd; color: #1e40af; } body.light .v1024 { background: #3b82f6; color: #fff; } body.light .v2048 { background: #fcd34d; color: #78350f; box-shadow: 0 4px 12px rgba(251,191,36,0.4); }
 
-/* ЭКРАНЫ МЕНЮ И ЛИДЕРБОРДА */
-.menu { position: fixed; inset: 0; display: none; background: rgba(3, 7, 18, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; opacity: 0; transition: opacity 0.3s ease; }
+/* OCEAN ТЕМА */
+body.ocean .v2 { background: #38bdf8; color: #0b1528; } body.ocean .v4 { background: #0ea5e9; color: #fff; } body.ocean .v8 { background: #0284c7; color: #fff; } body.ocean .v16 { background: #2563eb; color: #fff; } body.ocean .v32 { background: #3b82f6; color: #fff; } body.ocean .v64 { background: #6366f1; color: #fff; } body.ocean .v128 { background: #4f46e5; color: #fff; } body.ocean .v256 { background: #7c3aed; color: #fff; } body.ocean .v512 { background: #9333ea; color: #fff; } body.ocean .v1024 { background: #c084fc; color: #0b1528; } body.ocean .v2048 { background: #f472b6; color: #fff; box-shadow: 0 0 20px #f472b6; }
+
+/* SAKURA ТЕМА */
+body.sakura .v2 { background: #fff1f2; color: #9f1239; } body.sakura .v4 { background: #ffe4e6; color: #9f1239; } body.sakura .v8 { background: #fecdd3; color: #9f1239; } body.sakura .v16 { background: #fda4af; color: #4c0519; } body.sakura .v32 { background: #f43f5e; color: #fff; } body.sakura .v64 { background: #e11d48; color: #fff; } body.sakura .v128 { background: #be123c; color: #fff; } body.sakura .v256 { background: #9f1239; color: #fff; } body.sakura .v512 { background: #881337; color: #fff; } body.sakura .v1024 { background: #fb7185; color: #fff; } body.sakura .v2048 { background: #fff; color: #e11d48; border: 2px solid #e11d48; }
+
+/* NEON ТЕМА */
+body.neon .v2 { background: #00f5ff; color: #030008; box-shadow: 0 0 8px rgba(0,245,255,0.4); } body.neon .v4 { background: #00bfff; color: #fff; box-shadow: 0 0 10px rgba(0,191,255,0.4); } body.neon .v8 { background: #7000ff; color: #fff; } body.neon .v16 { background: #bd00ff; color: #fff; } body.neon .v32 { background: #ff00b7; color: #fff; } body.neon .v64 { background: #ff0055; color: #fff; } body.neon .v128 { background: #ff3300; color: #fff; } body.neon .v256 { background: #ffaa00; color: #030008; } body.neon .v512 { background: #e7fe00; color: #030008; } body.neon .v1024 { background: #00ff66; color: #030008; } body.neon .v2048 { background: #fff; color: #030008; box-shadow: 0 0 25px #fff; }
+
+/* ==========================================================================
+   ИНТЕРФЕЙС МЕНЮ
+   ========================================================================== */
+.menu { position: fixed; inset: 0; display: none; background: rgba(3, 7, 18, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; opacity: 0; transition: opacity 0.25s ease; }
 .menu.open { display: flex; align-items: flex-end; justify-content: center; opacity: 1; }
 
-.sheet { width: min(100vw, 440px); background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 24px; border-radius: 32px 32px 0 0; max-height: 85dvh; overflow: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.sheet { width: min(100vw, 440px); background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 24px; border-radius: 32px 32px 0 0; max-height: 85dvh; overflow: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 body.light .sheet { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.06); }
 .menu.open .sheet { transform: translateY(0); }
 
-.section { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
-.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 12px; }
+.section { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 10px; }
 
 .grid-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .grid-opts.themes { grid-template-columns: repeat(2, 1fr); }
@@ -124,7 +131,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 .close-btn { background: none; border: 0; color: var(--text); font-size: 20px; opacity: 0.5; cursor: pointer; padding: 4px; }
 
-/* Стили для таблицы лидеров */
 .leader-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 .leader-item { display: flex; justify-content: space-between; align-items: center; background: var(--empty); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border); font-weight: 600; }
 .leader-name { display: flex; align-items: center; gap: 10px; }
@@ -169,7 +175,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         </div>
 
         <div class="section">
-            <div class="section-title">🎮 Кнопки управления</div>
+            <div class="section-title">🎮 Управление</div>
             <div class="toggle-box">
                 <span>Кнопки на экране</span>
                 <label class="switch">
@@ -180,7 +186,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         </div>
 
         <div class="section">
-            <div class="section-title">🎨 Темы</div>
+            <div class="section-title">🎨 Темы оформления</div>
             <div class="grid-opts themes">
                 <button class="opt" onclick="theme('dark')">🌙 Dark</button>
                 <button class="opt" onclick="theme('light')">☀️ Light</button>
@@ -200,9 +206,7 @@ input:checked + .slider:before { transform: translateX(20px); }
             <h2 style="margin:0; font-size:22px; font-weight:800;">Топ игроков мира</h2>
             <button class="close-btn" onclick="closeMenu(null, 'leaderMenu', true)">✕</button>
         </div>
-        <div id="leaderboardContent" class="leader-list">
-            <div style="text-align:center; padding: 20px; opacity:0.5;">Загрузка лидеров...</div>
-        </div>
+        <div id="leaderboardContent" class="leader-list"></div>
     </div>
 </div>
 
@@ -211,7 +215,7 @@ const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
 
 let size=4,target=2048,scoreV=0,bestV=0,g=[],prevG=[]
-let playerName = tg.initDataUnsafe?.user?.first_name || tg.initDataUnsafe?.user?.username || "Анонимный Куб";
+let playerName = tg.initDataUnsafe?.user?.first_name || tg.initDataUnsafe?.user?.username || "Игрок";
 
 function openMenu(id) {
     const m = document.getElementById(id);
@@ -223,12 +227,10 @@ function closeMenu(e, id, force = false) {
     const m = document.getElementById(id);
     if (force || e.target === m) {
         m.classList.remove('open');
-        setTimeout(() => m.style.display = 'none', 300);
+        setTimeout(() => m.style.display = 'none', 250);
     }
 }
 
-// Эмуляция глобальной базы данных прямо через локальное хранилище + имитацию сетевых топ-игроков
-// Чтобы игроку было весело, мы генерируем живой топ-10, куда встраиваем его собственный рекорд!
 function openLeaderboard() {
     closeMenu(null, 'mainMenu', true);
     openMenu('leaderMenu');
@@ -236,34 +238,25 @@ function openLeaderboard() {
     const container = document.getElementById('leaderboardContent');
     container.innerHTML = "";
 
-    // Список фейковых, но реалистичных ботов-игроков для соревновательного духа
     let baseLeaders = [
         { name: "👑 CyberDur0v", score: 24800 },
         { name: "Pavel_Net", score: 18240 },
         { name: "CryptoBoss", score: 12500 },
         { name: "Ton_Holder", score: 9640 },
         { name: "Web3_Warrior", score: 7200 },
-        { name: "MemeCoin_King", score: 5120 },
-        { name: "Lucky_Swipe", score: 3400 }
+        { name: "MemeCoin_King", score: 5120 }
     ];
 
-    // Добавляем текущего игрока в общий массив
     baseLeaders.push({ name: "⭐ " + playerName + " (Вы)", score: bestV });
-
-    // Сортируем по убыванию очков
     baseLeaders.sort((a, b) => b.score - a.score);
 
-    // Оставляем только топ-8
     baseLeaders.slice(0, 8).forEach((player, index) => {
         const item = document.createElement('div');
         item.className = 'leader-item';
-        
-        // Выделяем самого игрока визуально
         if (player.name.includes("(Вы)")) {
             item.style.borderColor = "#eab308";
             item.style.background = "rgba(234, 179, 8, 0.1)";
         }
-
         item.innerHTML = `
             <div class="leader-name">
                 <span class="leader-rank">#${index + 1}</span>
@@ -298,7 +291,7 @@ function saveBest(){
 }
 
 function shareResult() {
-    const text = `🔥 Я набрал ${scoreV} очков в 2048 Premium! Мой лучший мировой рекорд: ${bestV}. Попробуй побить меня в Telegram! 🎮`;
+    const text = `🔥 Я набрал ${scoreV} очков в 2048 Premium! Мой рекорд: ${bestV}. Сможешь побить? 🎮`;
     tg.openTelegramLink(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`);
 }
 
@@ -310,6 +303,7 @@ function triggerHaptic(type) {
 }
 
 function mk(){return Array(size).fill().map(()=>Array(size).fill(0))}
+
 function add(){
     let f=[]
     for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(!g[y][x]) f.push([y,x])
