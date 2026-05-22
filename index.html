@@ -51,20 +51,30 @@ body.neon {
 }
 
 body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; }
-.app { width: 100%; max-width: 500px; height: 100dvh; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+.app { width: 100%; max-width: 500px; height: 100dvh; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
 
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; background: linear-gradient(45deg, var(--text), rgba(128,128,128,0.4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
+.score-container { position: relative; }
 .score-box { background: var(--panel); border: 1px solid var(--border); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 8px 16px; border-radius: 16px; display: flex; gap: 14px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px var(--shadow); }
 .score-box span { color: var(--text); font-weight: 800; font-size: 16px; display: block; }
 .score-label { opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
 
+/* Анимация +очков */
+.score-addition { position: absolute; top: -20px; left: 25px; transform: translateX(-50%); color: #22c55e; font-weight: 800; font-size: 18px; animation: floatUp 0.6s ease-out forwards; pointer-events: none; }
+@keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-25px); } }
+
 .btn { border: 1px solid var(--border); padding: 12px 16px; border-radius: 16px; background: var(--panel); color: var(--text); font-weight: 700; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px var(--shadow); }
 .btn:active { transform: scale(0.96); }
 
-.boardWrap { flex: 1; display: grid; place-items: center; min-height: 0; padding: 10px 0; }
-.board { width: min(90vw, 85dvh, 460px); aspect-ratio: 1; display: grid; gap: 10px; padding: 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 20px 40px var(--shadow); will-change: transform; }
+.boardWrap { flex: 1; display: grid; place-items: center; min-height: 0; padding: 10px 0; position: relative; }
+.board { width: min(90vw, 85dvh, 460px); aspect-ratio: 1; display: grid; gap: 10px; padding: 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 20px 40px var(--shadow); position: relative; }
+
+/* Экраны конца игры */
+.overlay { position: absolute; inset: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border-radius: 16px; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 5; animation: fadeIn 0.3s ease forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.overlay h2 { font-size: 32px; font-weight: 900; margin: 0; }
 
 .cell { width: 100%; height: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: clamp(18px, 6vw, 36px); border-radius: 16px; background: var(--empty); position: relative; color: var(--text); }
 .tile { animation: spawn 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; box-shadow: 0 4px 10px rgba(0,0,0,0.15); will-change: transform, opacity; }
@@ -77,34 +87,28 @@ h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; backgro
 .ctrl-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text); border-radius: 16px; height: 54px; font-size: 22px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--shadow); touch-action: manipulation; }
 .ctrl-btn:active { transform: scale(0.92); background: var(--empty); }
 
-/* СТИЛИ КУБОВ ДЛЯ ВСЕХ ТЕМ */
+/* ЦВЕТА ПЛИТОК */
 body.dark .v2 { background: #334155 !important; color: #f8fafc !important; } body.dark .v4 { background: #475569 !important; color: #f8fafc !important; } body.dark .v8 { background: #f97316 !important; color: #fff !important; } body.dark .v16 { background: #ea580c !important; color: #fff !important; } body.dark .v32 { background: #ef4444 !important; color: #fff !important; } body.dark .v64 { background: #dc2626 !important; color: #fff !important; } body.dark .v128 { background: #06b6d4 !important; color: #0f172a !important; box-shadow: 0 0 12px rgba(6,182,212,0.4); } body.dark .v256 { background: #0ea5e9 !important; color: #fff !important; box-shadow: 0 0 16px rgba(14,165,233,0.4); } body.dark .v512 { background: #3b82f6 !important; color: #fff !important; box-shadow: 0 0 20px rgba(59,130,246,0.5); } body.dark .v1024 { background: #6366f1 !important; color: #fff !important; } body.dark .v2048 { background: #a855f7 !important; color: #fff !important; box-shadow: 0 0 25px #a855f7; }
 body.light .v2 { background: #cbd5e1 !important; color: #1e293b !important; } body.light .v4 { background: #94a3b8 !important; color: #f8fafc !important; } body.light .v8 { background: #ffedd5 !important; color: #ea580c !important; } body.light .v16 { background: #fed7aa !important; color: #c2410c !important; } body.light .v32 { background: #fdba74 !important; color: #9a3412 !important; } body.light .v64 { background: #f97316 !important; color: #fff !important; } body.light .v128 { background: #fca5a5 !important; color: #991b1b !important; } body.light .v256 { background: #ef4444 !important; color: #fff !important; } body.light .v512 { background: #93c5fd !important; color: #1e40af !important; } body.light .v1024 { background: #3b82f6 !important; color: #fff !important; } body.light .v2048 { background: #fcd34d !important; color: #78350f !important; box-shadow: 0 4px 12px rgba(251,191,36,0.4); }
 body.ocean .v2 { background: #38bdf8 !important; color: #0b1528 !important; } body.ocean .v4 { background: #0ea5e9 !important; color: #fff !important; } body.ocean .v8 { background: #0284c7 !important; color: #fff !important; } body.ocean .v16 { background: #2563eb !important; color: #fff !important; } body.ocean .v32 { background: #3b82f6 !important; color: #fff !important; } body.ocean .v64 { background: #6366f1 !important; color: #fff !important; } body.ocean .v128 { background: #4f46e5 !important; color: #fff !important; } body.ocean .v256 { background: #7c3aed !important; color: #fff !important; } body.ocean .v512 { background: #9333ea !important; color: #fff !important; } body.ocean .v1024 { background: #c084fc !important; color: #0b1528 !important; } body.ocean .v2048 { background: #f472b6 !important; color: #fff !important; box-shadow: 0 0 20px #f472b6; }
 body.sakura .v2 { background: #fff1f2 !important; color: #9f1239 !important; } body.sakura .v4 { background: #ffe4e6 !important; color: #9f1239 !important; } body.sakura .v8 { background: #fecdd3 !important; color: #9f1239 !important; } body.sakura .v16 { background: #fda4af !important; color: #4c0519 !important; } body.sakura .v32 { background: #f43f5e !important; color: #fff !important; } body.sakura .v64 { background: #e11d48 !important; color: #fff !important; } body.sakura .v128 { background: #be123c !important; color: #fff !important; } body.sakura .v256 { background: #9f1239 !important; color: #fff !important; } body.sakura .v512 { background: #881337 !important; color: #fff !important; } body.sakura .v1024 { background: #fb7185 !important; color: #fff !important; } body.sakura .v2048 { background: #fff !important; color: #e11d48 !important; border: 2px solid #e11d48; }
 body.neon .v2 { background: #00f5ff !important; color: #030008 !important; box-shadow: 0 0 8px rgba(0,245,255,0.4); } body.neon .v4 { background: #00bfff !important; color: #fff !important; box-shadow: 0 0 10px rgba(0,191,255,0.4); } body.neon .v8 { background: #7000ff !important; color: #fff !important; } body.neon .v16 { background: #bd00ff !important; color: #fff !important; } body.neon .v32 { background: #ff00b7 !important; color: #fff !important; } body.neon .v64 { background: #ff0055 !important; color: #fff !important; } body.neon .v128 { background: #ff3300 !important; color: #fff !important; } body.neon .v256 { background: #ffaa00 !important; color: #030008 !important; } body.neon .v512 { background: #e7fe00 !important; color: #030008 !important; } body.neon .v1024 { background: #00ff66 !important; color: #030008 !important; } body.neon .v2048 { background: #fff !important; color: #030008 !important; box-shadow: 0 0 25px #fff; }
 
-/* МЕНЮ */
 .menu { position: fixed; inset: 0; display: none; background: rgba(3, 7, 18, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; opacity: 0; transition: opacity 0.25s ease; }
 .menu.open { display: flex; align-items: flex-end; justify-content: center; opacity: 1; }
-
 .sheet { width: min(100vw, 440px); background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 24px; border-radius: 32px 32px 0 0; max-height: 85dvh; overflow: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 body.light .sheet { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.06); }
 .menu.open .sheet { transform: translateY(0); }
-
 .section { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
 .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 10px; }
-
 .grid-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .grid-opts.themes { grid-template-columns: repeat(2, 1fr); }
 .grid-opts.themes .opt:last-child { grid-column: span 2; }
-
 .opt { width: 100%; padding: 12px 8px; border: 1px solid var(--border); border-radius: 16px; background: var(--empty); color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .opt:active { background: var(--panel); transform: scale(0.97); }
 .opt-wide { grid-column: span 3; background: var(--panel); font-weight: 700; font-size: 15px; padding: 16px; color: #38bdf8; margin-top: 5px;}
 .opt-share { color: #22c55e !important; }
 .opt-leader { color: #eab308 !important; }
-
 .toggle-box { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--empty); padding: 14px 18px; border-radius: 16px; border: 1px solid var(--border); font-weight: 600; font-size: 14px; }
 .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -112,9 +116,7 @@ body.light .sheet { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,
 .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
 input:checked + .slider { background-color: #22c55e; }
 input:checked + .slider:before { transform: translateX(20px); }
-
 .close-btn { background: none; border: 0; color: var(--text); font-size: 20px; opacity: 0.5; cursor: pointer; padding: 4px; }
-
 .leader-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 .leader-item { display: flex; justify-content: space-between; align-items: center; background: var(--empty); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border); font-weight: 600; }
 .leader-name { display: flex; align-items: center; gap: 10px; }
@@ -129,15 +131,25 @@ input:checked + .slider:before { transform: translateX(20px); }
     <div class="top">
         <h1>2048</h1>
         <div style="display: flex; gap: 8px; align-items: center;">
-            <div class="score-box">
-                <div><div class="score-label">Счет</div><span id="score">0</span></div>
-                <div style="border-left: 1px solid var(--border); padding-left: 12px;"><div class="score-label">Рекорд</div><span id="best">0</span></div>
+            <div class="score-container">
+                <div class="score-box">
+                    <div><div class="score-label">Счет</div><span id="score">0</span></div>
+                    <div style="border-left: 1px solid var(--border); padding-left: 12px;"><div class="score-label">Рекорд</div><span id="best">0</span></div>
+                </div>
+                <div id="scoreAdditionContainer"></div>
             </div>
+            <button class="btn" onclick="undo()" title="Шаг назад">↩️</button>
             <button class="btn" onclick="openMenu('mainMenu')">⚙️</button>
         </div>
     </div>
 
-    <div class="boardWrap"><div id="board" class="board"></div></div>
+    <div class="boardWrap">
+        <div id="board" class="board"></div>
+        <div id="gameOverOverlay" class="overlay">
+            <h2 id="overlayTitle">Игра окончена!</h2>
+            <button class="btn" style="padding: 16px 32px; font-size: 16px;" onclick="start()">Играть снова 🔄</button>
+        </div>
+    </div>
 
     <div id="keyboardControls" class="controls">
         <div></div><button class="ctrl-btn" onclick="move('u')">▲</button><div></div>
@@ -151,13 +163,11 @@ input:checked + .slider:before { transform: translateX(20px); }
             <h2 style="margin:0; font-size:22px; font-weight:800;">Настройки</h2>
             <button class="close-btn" onclick="closeMenu(null, 'mainMenu', true)">✕</button>
         </div>
-
         <div class="section">
             <div class="section-title">🏆 Соревнования</div>
             <button class="opt opt-wide opt-leader" onclick="openLeaderboard()">🥇 Таблица лидеров</button>
             <button class="opt opt-wide opt-share" onclick="shareResult()">🚀 Поделиться рекордом</button>
         </div>
-
         <div class="section">
             <div class="section-title">🎮 Управление</div>
             <div class="toggle-box">
@@ -168,7 +178,6 @@ input:checked + .slider:before { transform: translateX(20px); }
                 </label>
             </div>
         </div>
-
         <div class="section">
             <div class="section-title">🎨 Темы оформления</div>
             <div class="grid-opts themes">
@@ -179,7 +188,6 @@ input:checked + .slider:before { transform: translateX(20px); }
                 <button class="opt" onclick="theme('neon')">⚡ Neon</button>
             </div>
         </div>
-
         <div class="section"><button class="opt opt-wide" onclick="start()">🔄 Новая игра</button></div>
     </div>
 </div>
@@ -196,71 +204,48 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <script>
 let size=4, scoreV=0, bestV=0, g=[], prevG=[];
+let historyGrid = null, historyScore = 0; // Для функции Undo
 let playerName = "Игрок";
 
-// Безопасное получение элементов DOM
 const board = document.getElementById('board');
 const score = document.getElementById('score');
 const best = document.getElementById('best');
+const overlay = document.getElementById('gameOverOverlay');
+const overlayTitle = document.getElementById('overlayTitle');
 
 function openMenu(id) {
     const m = document.getElementById(id);
-    if(m) {
-        m.style.display = 'flex';
-        setTimeout(() => m.classList.add('open'), 10);
-    }
+    if(m) { m.style.display = 'flex'; setTimeout(() => m.classList.add('open'), 10); }
 }
 
 function closeMenu(e, id, force = false) {
     const m = document.getElementById(id);
-    if (m && (force || e.target === m)) {
-        m.classList.remove('open');
-        setTimeout(() => m.style.display = 'none', 250);
-    }
+    if (m && (force || e.target === m)) { m.classList.remove('open'); setTimeout(() => m.style.display = 'none', 250); }
 }
 
 function openLeaderboard() {
     closeMenu(null, 'mainMenu', true);
     openMenu('leaderMenu');
-    
     const container = document.getElementById('leaderboardContent');
     if(!container) return;
     container.innerHTML = "";
-
-    // Вот они, наши пасхальные легенды:
-    let baseLeaders = [
-        { name: "👑 Ваня228", score: 65536 },
-        { name: "🦖 Арсенал", score: 32768 },
-        { name: "🕶️ Абоба", score: 16384 },
-        { name: "🦔 Ежидзе", score: 4096 },
-        { name: "☕ Левый тип", score: 2048 },
-        { name: "🐛 не ты", score: 1024 }
-    ];
-
-    // Добавляем тебя в этот список
-    baseLeaders.push({ name: "⭐ " + playerName + " (Вы)", score: bestV });
     
-    // Сортируем, чтобы всё было честно — от большего к меньшему
+    let baseLeaders = [
+        { name: "👑 Satoshi_Nakamoto", score: 65536 },
+        { name: "🦖 Chrome_Offline", score: 32768 },
+        { name: "🕶️ Neo", score: 16384 },
+        { name: "🦔 Sanic_Fast", score: 4096 },
+        { name: "☕ Java_Developer", score: 2048 },
+        { name: "🐛 Bug_Feature", score: 1024 }
+    ];
+    
+    baseLeaders.push({ name: "⭐ " + playerName + " (Вы)", score: bestV });
     baseLeaders.sort((a, b) => b.score - a.score);
-
-    // Отрисовываем топ-8 на экране
     baseLeaders.slice(0, 8).forEach((player, index) => {
         const item = document.createElement('div');
         item.className = 'leader-item';
-        
-        // Красиво подсвечиваем строчку игрока золотым цветом
-        if (player.name.includes("(Вы)")) {
-            item.style.borderColor = "#eab308";
-            item.style.background = "rgba(234, 179, 8, 0.1)";
-        }
-        
-        item.innerHTML = `
-            <div class="leader-name">
-                <span class="leader-rank">#${index + 1}</span>
-                <span>${player.name}</span>
-            </div>
-            <span class="leader-score">${player.score}</span>
-        `;
+        if (player.name.includes("(Вы)")) { item.style.borderColor = "#eab308"; item.style.background = "rgba(234, 179, 8, 0.1)"; }
+        item.innerHTML = `<div class="leader-name"><span class="leader-rank">#${index + 1}</span><span>${player.name}</span></div><span class="leader-score">${player.score}</span>`;
         container.appendChild(item);
     });
 }
@@ -285,9 +270,7 @@ function shareResult() {
 
 function mk(){
     let arr = [];
-    for(let i=0; i<size; i++) {
-        arr.push(new Array(size).fill(0));
-    }
+    for(let i=0; i<size; i++) arr.push(new Array(size).fill(0));
     return arr;
 }
 
@@ -299,25 +282,93 @@ function add(){
     g[p[0]][p[1]]=Math.random()<.9?2:4;
 }
 
-function slide(r, m){
+function slide(r, scoreTracker){
     r=r.filter(Boolean);
-    for(let i=0;i<r.length-1;i++) {
-        if(r[i]==r[i+1]){ r[i]*=2; scoreV+=r[i]; r[i+1]=0; }
+    for(let i=0;i<r.length-1;i++) { 
+        if(r[i]==r[i+1]){ 
+            r[i]*=2; 
+            scoreV+=r[i]; 
+            scoreTracker.added += r[i];
+            r[i+1]=0; 
+        } 
     }
     r=r.filter(Boolean); while(r.length<size) r.push(0); return r;
 }
 
 function move(d){
-    let old=JSON.stringify(g); prevG = JSON.parse(old);
-    if(d=="l") g=g.map(r => slide(r))
-    if(d=="r") g=g.map(r=>slide([...r].reverse()).reverse())
+    if(overlay.style.display === 'flex') return;
+    
+    let old=JSON.stringify(g); 
+    let scoreTracker = { added: 0 };
+    
+    // Сохраняем стейт для Undo перед ходом
+    let tempHistoryGrid = JSON.parse(old);
+    let tempHistoryScore = scoreV;
+
+    prevG = JSON.parse(old);
+    
+    if(d=="l") g=g.map(r => slide(r, scoreTracker))
+    if(d=="r") g=g.map(r=>slide([...r].reverse(), scoreTracker).reverse())
     if(d=="u"||d=="d"){
         for(let x=0;x<size;x++){
-            let c=g.map(r=>r[x]); if(d=="d") c.reverse(); c=slide(c); if(d=="d") c.reverse();
+            let c=g.map(r=>r[x]); if(d=="d") c.reverse(); c=slide(c, scoreTracker); if(d=="d") c.reverse();
             for(let y=0;y<size;y++) g[y][x]=c[y];
         }
     }
-    if(old!=JSON.stringify(g)) { add(); render(true); }
+    
+    if(old!=JSON.stringify(g)) { 
+        historyGrid = tempHistoryGrid;
+        historyScore = tempHistoryScore;
+        add(); 
+        if(scoreTracker.added > 0) showScoreAddition(scoreTracker.added);
+        render(true); 
+        checkGameState();
+    }
+}
+
+function showScoreAddition(amount) {
+    const container = document.getElementById('scoreAdditionContainer');
+    if(!container) return;
+    container.innerHTML = "";
+    const el = document.createElement('div');
+    el.className = 'score-addition';
+    el.textContent = `+${amount}`;
+    container.appendChild(el);
+}
+
+function undo() {
+    if(historyGrid && overlay.style.display !== 'flex') {
+        g = JSON.parse(JSON.stringify(historyGrid));
+        scoreV = historyScore;
+        historyGrid = null; // Можно вернуть только 1 раз за ход
+        render();
+    }
+}
+
+function checkGameState() {
+    // Проверка на победу (2048)
+    for(let y=0;y<size;y++) {
+        for(let x=0;x<size;x++) {
+            if(g[y][x] === 2048) {
+                overlayTitle.textContent = "Вы победили! 🎉";
+                overlay.style.display = 'flex';
+                return;
+            }
+        }
+    }
+    // Проверка на поражение (нет свободных мест и ходов)
+    let hasMoves = false;
+    for(let y=0;y<size;y++) {
+        for(let x=0;x<size;x++) {
+            if(!g[y][x]) hasMoves = true;
+            if(x < size - 1 && g[y][x] === g[y][x+1]) hasMoves = true;
+            if(y < size - 1 && g[y][x] === g[y+1][x]) hasMoves = true;
+        }
+    }
+    if(!hasMoves) {
+        overlayTitle.textContent = "Игра окончена! 👻";
+        overlay.style.display = 'flex';
+    }
 }
 
 function render(animate = false){
@@ -328,7 +379,7 @@ function render(animate = false){
         for(let x=0;x<size;x++){
             let v=g[y][x], d=document.createElement("div");
             d.className="cell "+(v?"tile v"+v:"");
-            d.textContent=v||"";
+            d.textContent=v||""
             if(animate && v && prevG[y] && prevG[y][x] !== v && prevG[y][x] !== 0) d.classList.add('merged');
             board.append(d);
         }
@@ -336,7 +387,11 @@ function render(animate = false){
     if(score) score.textContent=scoreV; saveBest();
 }
 
-function start(){ scoreV=0; g=mk(); prevG=mk(); add(); add(); closeMenu(null, 'mainMenu', true); render(); }
+function start(){ 
+    scoreV=0; historyGrid = null; g=mk(); prevG=mk(); add(); add(); 
+    overlay.style.display = 'none';
+    closeMenu(null, 'mainMenu', true); render(); 
+}
 function theme(t){ document.body.className=t; localStorage.theme=t; }
 function toggleButtons(show) { 
     const ctrl = document.getElementById('keyboardControls');
@@ -345,10 +400,15 @@ function toggleButtons(show) {
 }
 
 document.onkeydown=e=>{ const k={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key]; if(k) { e.preventDefault(); move(k); } }
-let sx,sy; document.body.onTouchStart = board.ontouchstart=e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }; board.ontouchmove=e=>{ e.preventDefault(); }
-board.ontouchend=e=>{
-    let dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dx) > 15 || Math.abs(dy) > 15) move(Math.abs(dx)>Math.abs(dy)?(dx>0?"r":"l"):(dy>0?"d":"u"));
+
+let sx,sy; 
+if(board) {
+    board.ontouchstart=e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }; 
+    board.ontouchmove=e=>{ e.preventDefault(); };
+    board.ontouchend=e=>{
+        let dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+        if(Math.abs(dx) > 15 || Math.abs(dy) > 15) move(Math.abs(dx)>Math.abs(dy)?(dx>0?"r":"l"):(dy>0?"d":"u"));
+    };
 }
 
 theme(localStorage.theme || "dark");
