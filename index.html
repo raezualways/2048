@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>2048 Premium</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 * { box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
 html, body { margin: 0; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-user-select: none; user-select: none; }
@@ -112,7 +113,7 @@ body.sakura h1 { background: linear-gradient(45deg, #4c0519, #be123c); -webkit-b
 
 /* Блок накрикранных кнопок управления */
 .controls {
-    display: none; /* По умолчанию скрыто, включается через JS */
+    display: none;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     width: 100%;
@@ -139,8 +140,6 @@ body.sakura h1 { background: linear-gradient(45deg, #4c0519, #be123c); -webkit-b
 /* ==========================================================================
    УНИКАЛЬНЫЕ СТИЛИ КУБОВ ДЛЯ КАЖДОЙ ТЕМЫ
    ========================================================================== */
-
-/* --- СТИЛИ ДЛЯ ТЕМЫ: DARK --- */
 body.dark .v2 { background: #334155; color: #f8fafc; }
 body.dark .v4 { background: #475569; color: #f8fafc; }
 body.dark .v8 { background: #f97316; color: #ffffff; }
@@ -153,7 +152,6 @@ body.dark .v512 { background: #3b82f6; color: #ffffff; box-shadow: 0 0 25px rgba
 body.dark .v1024 { background: #6366f1; color: #ffffff; }
 body.dark .v2048 { background: #a855f7; color: #ffffff; box-shadow: 0 0 30px #a855f7; }
 
-/* --- СТИЛИ ДЛЯ ТЕМЫ: LIGHT --- */
 body.light .v2 { background: #f1f5f9; color: #475569; }
 body.light .v4 { background: #e2e8f0; color: #334155; }
 body.light .v8 { background: #ffedd5; color: #ea580c; }
@@ -166,7 +164,6 @@ body.light .v512 { background: #93c5fd; color: #1e40af; }
 body.light .v1024 { background: #3b82f6; color: #ffffff; }
 body.light .v2048 { background: #fcd34d; color: #78350f; box-shadow: 0 6px 15px rgba(251,191,36,0.5); }
 
-/* --- СТИЛИ ДЛЯ ТЕМЫ: OCEAN --- */
 body.ocean .v2 { background: #38bdf8; color: #0b1528; }
 body.ocean .v4 { background: #0ea5e9; color: #ffffff; }
 body.ocean .v8 { background: #0284c7; color: #ffffff; }
@@ -179,7 +176,6 @@ body.ocean .v512 { background: #9333ea; color: #ffffff; box-shadow: 0 0 25px rgb
 body.ocean .v1024 { background: #c084fc; color: #0b1528; }
 body.ocean .v2048 { background: #f472b6; color: #ffffff; box-shadow: 0 0 30px #f472b6; }
 
-/* --- СТИЛИ ДЛЯ ТЕМЫ: SAKURA --- */
 body.sakura .v2 { background: #fff1f2; color: #9f1239; }
 body.sakura .v4 { background: #ffe4e6; color: #9f1239; }
 body.sakura .v8 { background: #fecdd3; color: #9f1239; }
@@ -192,7 +188,6 @@ body.sakura .v512 { background: #881337; color: #ffffff; }
 body.sakura .v1024 { background: #fb7185; color: #ffffff; box-shadow: 0 0 15px rgba(244,63,94,0.4); }
 body.sakura .v2048 { background: #ffffff; color: #e11d48; border: 2px solid #e11d48; box-shadow: 0 0 20px rgba(225,29,72,0.3); }
 
-/* --- СТИЛИ ДЛЯ ТЕМЫ: NEON --- */
 body.neon .v2 { background: #00f5ff; color: #030008; box-shadow: 0 0 8px rgba(0,245,255,0.4); }
 body.neon .v4 { background: #00bfff; color: #ffffff; box-shadow: 0 0 10px rgba(0,191,255,0.4); }
 body.neon .v8 { background: #7000ff; color: #ffffff; box-shadow: 0 0 12px rgba(112,0,255,0.4); }
@@ -204,7 +199,6 @@ body.neon .v256 { background: #ffaa00; color: #030008; box-shadow: 0 0 22px #ffa
 body.neon .v512 { background: #e7fe00; color: #030008; box-shadow: 0 0 25px #e7fe00; }
 body.neon .v1024 { background: #00ff66; color: #030008; box-shadow: 0 0 28px #00ff66; }
 body.neon .v2048 { background: #ffffff; color: #030008; box-shadow: 0 0 35px #ffffff, 0 0 15px #00f5ff; }
-
 
 /* ==========================================================================
    МЕНЮ НАСТРОЕК (SHEET UI)
@@ -240,10 +234,10 @@ body.sakura .sheet { background: rgba(255, 255, 255, 0.95); border-color: rgba(0
 }
 .opt:active { background: var(--panel); transform: scale(0.97); }
 .opt-wide { grid-column: span 3; background: var(--panel); font-weight: 700; font-size: 15px; padding: 16px; color: #38bdf8; margin-top: 5px;}
+.opt-share { color: #22c55e !important; } /* Зеленая кнопка поделиться */
 body.light .opt-wide { color: #2563eb; }
 body.sakura .opt-wide { color: #e11d48; }
 
-/* Стили тумблера */
 .toggle-box { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--empty); padding: 14px 18px; border-radius: 16px; border: 1px solid var(--border); font-weight: 600; font-size: 14px; }
 .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -301,6 +295,11 @@ input:checked + .slider:before { transform: translateX(20px); }
         </div>
 
         <div class="section">
+            <div class="section-title">📢 Соцсети</div>
+            <button class="opt opt-wide opt-share" onclick="shareResult()">🚀 Поделиться рекордом</button>
+        </div>
+
+        <div class="section">
             <div class="section-title">🎮 Кнопки управления</div>
             <div class="toggle-box">
                 <span>Кнопки на экране</span>
@@ -339,7 +338,12 @@ input:checked + .slider:before { transform: translateX(20px); }
 </div>
 
 <script>
-let size=4,target=2048,scoreV=0,g=[],prevG=[]
+// Инициализируем Telegram WebApp
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand(); // Разворачиваем приложение на весь экран
+
+let size=4,target=2048,scoreV=0,bestV=0,g=[],prevG=[]
 
 function openMenu() {
     const m = document.getElementById('menu');
@@ -355,9 +359,59 @@ function closeMenu(e, force = false) {
     }
 }
 
+// Загрузка рекорда из Telegram Cloud Storage
+function loadBest() {
+    try {
+        tg.CloudStorage.getItem('best_score_v1', (err, value) => {
+            if (!err && value) {
+                bestV = parseInt(value) || 0;
+            } else {
+                // Запасной вариант, если облако не ответило
+                bestV = parseInt(localStorage.best) || 0;
+            }
+            best.textContent = bestV;
+        });
+    } catch(e) {
+        bestV = parseInt(localStorage.best) || 0;
+        best.textContent = bestV;
+    }
+}
+
+// Сохранение рекорда в Telegram Cloud Storage
 function saveBest(){
-    localStorage.best=Math.max(+localStorage.best||0,scoreV)
-    best.textContent=localStorage.best
+    if (scoreV > bestV) {
+        bestV = scoreV;
+        best.textContent = bestV;
+        localStorage.best = bestV; // Локальный бэкап
+        
+        try {
+            // Сохраняем в облако Дурова
+            tg.CloudStorage.setItem('best_score_v1', bestV.toString());
+        } catch(e) {
+            console.log("CloudStorage error", e);
+        }
+    }
+}
+
+// Функция "Поделиться рекордом" в чаты ТГ
+function shareResult() {
+    const botUrl = tg.initDataUnsafe?.custom_method_allowed ? "" : "t.me/" + tg.initDataUnsafe?.receiver?.username; 
+    // Поскольку точную ссылку на твоего бота мы не знаем динамически, ТГ позволяет открыть окно выбора чата:
+    const text = `Я набрал ${scoreV} очков в 2048 Premium! Мой лучший рекорд: ${bestV}. Сможешь побить? 🎮`;
+    
+    // Открываем встроенный шеринг Телеграма
+    tg.openTelegramLink(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`);
+}
+
+// Тактильный отклик (Вибрация)
+function triggerHaptic(type) {
+    try {
+        if (type === 'merge') {
+            tg.HapticFeedback.notificationOccurred('success'); // Сильная двойная для мёрджа
+        } else {
+            tg.HapticFeedback.impactOccurred('light'); // Лёгкая для обычного свайпа
+        }
+    } catch(e) {}
 }
 
 function mk(){return Array(size).fill().map(()=>Array(size).fill(0))}
@@ -370,13 +424,14 @@ function add(){
     g[p[0]][p[1]]=Math.random()<.9?2:4
 }
 
-function slide(r){
+function slide(r, mergedTrack){
     r=r.filter(Boolean)
     for(let i=0;i<r.length-1;i++) {
         if(r[i]==r[i+1]){
             r[i]*=2
             scoreV+=r[i]
             r[i+1]=0
+            if(mergedTrack) mergedTrack.count++;
         }
     }
     r=r.filter(Boolean)
@@ -387,15 +442,16 @@ function slide(r){
 function move(d){
     let old=JSON.stringify(g)
     prevG = JSON.parse(old)
+    let mergedTrack = { count: 0 };
 
-    if(d=="l") g=g.map(slide)
-    if(d=="r") g=g.map(r=>slide([...r].reverse()).reverse())
+    if(d=="l") g=g.map(r => slide(r, mergedTrack))
+    if(d=="r") g=g.map(r=>slide([...r].reverse(), mergedTrack).reverse())
 
     if(d=="u"||d=="d"){
         for(let x=0;x<size;x++){
             let c=g.map(r=>r[x])
             if(d=="d") c.reverse()
-            c=slide(c)
+            c=slide(c, mergedTrack)
             if(d=="d") c.reverse()
             for(let y=0;y<size;y++) g[y][x]=c[y]
         }
@@ -403,6 +459,12 @@ function move(d){
 
     if(old!=JSON.stringify(g)) {
         add()
+        // Активируем haptics в зависимости от исхода хода
+        if (mergedTrack.count > 0) {
+            triggerHaptic('merge');
+        } else {
+            triggerHaptic('slide');
+        }
         render(true)
     }
 }
@@ -456,16 +518,11 @@ function toggleButtons(show) {
     localStorage.showButtons = show ? '1' : '0';
 }
 
-// Управление кнопками клавиатуры
 document.onkeydown=e=>{
     const k={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key]
-    if(k) {
-        e.preventDefault();
-        move(k)
-    }
+    if(k) { e.preventDefault(); move(k); }
 }
 
-// Управление свайпами
 let sx,sy
 board.ontouchstart=e=>{
     sx=e.touches[0].clientX
@@ -481,7 +538,7 @@ board.ontouchend=e=>{
     }
 }
 
-// Инициализация параметров
+// Инициализация
 const savedTheme = localStorage.theme || "dark";
 theme(savedTheme);
 
@@ -489,8 +546,9 @@ const showButtons = localStorage.showButtons === '1';
 document.getElementById('btnToggle').checked = showButtons;
 toggleButtons(showButtons);
 
-best.textContent=localStorage.best||0
-start()
+// Первичная загрузка рекорда
+loadBest();
+start();
 </script>
 
 </body>
