@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>2048 Premium</title>
+<style>
+* { box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+html, body { margin: 0; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-user-select: none; user-select: none; }
+
+/* ==========================================================================
+   ЦВЕТОВЫЕ ПАЛИТРЫ (ТЕМЫ)
+   ========================================================================== */
+
+/* 1. КЛАССИЧЕСКАЯ ТЕМНАЯ (DARK) */
+:root, body.dark {
+    --bg: #0f172a;
+    --panel: rgba(30, 41, 59, 0.7);
+    --empty: rgba(51, 65, 85, 0.3);
+    --text: #f8fafc;
+    --border: rgba(255, 255, 255, 0.08);
+    --shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* 2. КЛАССИЧЕСКАЯ СВЕТЛАЯ (LIGHT) */
+body.light {
+    --bg: #f8fafc;
+    --panel: rgba(241, 245, 249, 0.85);
+    --empty: #e2e8f0;
+    --text: #0f172a;
+    --border: rgba(0, 0, 0, 0.06);
+    --shadow: rgba(15, 23, 42, 0.08);
+}
+
+/* 3. ОКЕАН (OCEAN) */
+body.ocean {
+    --bg: #0b1528;
+    --panel: rgba(22, 38, 70, 0.75);
+    --empty: rgba(30, 58, 102, 0.4);
+    --text: #e2e8f0;
+    --border: rgba(56, 189, 248, 0.15);
+    --shadow: rgba(0, 0, 0, 0.4);
+}
+
+/* 4. САКУРА (SAKURA) */
+body.sakura {
+    --bg: #fff1f2;
+    --panel: rgba(255, 255, 255, 0.85);
+    --empty: #ffe4e6;
+    --text: #4c0519;
+    --border: rgba(251, 113, 133, 0.2);
+    --shadow: rgba(76, 5, 25, 0.05);
+}
+
+/* 5. НЕОН (NEON) */
+body.neon {
+    --bg: #030008;
+    --panel: rgba(22, 8, 43, 0.7);
+    --empty: rgba(45, 20, 83, 0.3);
+    --text: #ffffff;
+    --border: rgba(192, 38, 211, 0.25);
+    --shadow: rgba(0, 0, 0, 0.5);
+}
+
+body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; }
+.app { width: 100%; max-width: 500px; height: 100dvh; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+
+/* Интерфейс верх */
+.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; background: linear-gradient(45deg, var(--text), rgba(128,128,128,0.4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+body.light h1 { background: linear-gradient(45deg, #0f172a, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+body.sakura h1 { background: linear-gradient(45deg, #4c0519, #be123c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.score-box { background: var(--panel); border: 1px solid var(--border); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 8px 16px; border-radius: 16px; display: flex; gap: 14px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px var(--shadow); }
+.score-box span { color: var(--text); font-weight: 800; font-size: 16px; display: block; }
+.score-label { opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+.btn { border: 1px solid var(--border); padding: 12px 16px; border-radius: 16px; background: var(--panel); color: var(--text); font-weight: 700; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px var(--shadow); }
+.btn:active { transform: scale(0.96); }
+
+/* Игровое поле */
+.boardWrap { flex: 1; display: grid; place-items: center; min-height: 0; padding: 10px 0; }
+.board {
+    width: min(90vw, 85dvh, 460px);
+    aspect-ratio: 1;
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px var(--shadow);
+}
+
+/* Базовые стили плиток */
+.cell {
+    width: 100%; height: 100%; aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: clamp(16px, 6vw, 36px); border-radius: 16px;
+    background: var(--empty); position: relative;
+}
+.tile {
+    animation: spawn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.tile.merged { animation: pop 0.2s ease-in-out; }
+
+@keyframes spawn { 0% { transform: scale(0.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+/* Блок накрикранных кнопок управления */
+.controls {
+    display: none; /* По умолчанию скрыто, включается через JS */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 260px;
+    margin: 10px auto 0 auto;
+}
+.ctrl-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 16px;
+    height: 54px;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px var(--shadow);
+    touch-action: manipulation;
+}
+.ctrl-btn:active { transform: scale(0.92); background: var(--empty); }
+
+/* ==========================================================================
+   УНИКАЛЬНЫЕ СТИЛИ КУБОВ ДЛЯ КАЖДОЙ ТЕМЫ
+   ========================================================================== */
+
+/* --- СТИЛИ ДЛЯ ТЕМЫ: DARK --- */
+body.dark .v2 { background: #334155; color: #f8fafc; }
+body.dark .v4 { background: #475569; color: #f8fafc; }
+body.dark .v8 { background: #f97316; color: #ffffff; }
+body.dark .v16 { background: #ea580c; color: #ffffff; }
+body.dark .v32 { background: #ef4444; color: #ffffff; }
+body.dark .v64 { background: #dc2626; color: #ffffff; }
+body.dark .v128 { background: #06b6d4; color: #0f172a; box-shadow: 0 0 15px rgba(6,182,212,0.4); }
+body.dark .v256 { background: #0ea5e9; color: #ffffff; box-shadow: 0 0 20px rgba(14,165,233,0.4); }
+body.dark .v512 { background: #3b82f6; color: #ffffff; box-shadow: 0 0 25px rgba(59,130,246,0.5); }
+body.dark .v1024 { background: #6366f1; color: #ffffff; }
+body.dark .v2048 { background: #a855f7; color: #ffffff; box-shadow: 0 0 30px #a855f7; }
+
+/* --- СТИЛИ ДЛЯ ТЕМЫ: LIGHT --- */
+body.light .v2 { background: #f1f5f9; color: #475569; }
+body.light .v4 { background: #e2e8f0; color: #334155; }
+body.light .v8 { background: #ffedd5; color: #ea580c; }
+body.light .v16 { background: #fed7aa; color: #c2410c; }
+body.light .v32 { background: #fdba74; color: #9a3412; }
+body.light .v64 { background: #f97316; color: #ffffff; }
+body.light .v128 { background: #fca5a5; color: #991b1b; }
+body.light .v256 { background: #ef4444; color: #ffffff; }
+body.light .v512 { background: #93c5fd; color: #1e40af; }
+body.light .v1024 { background: #3b82f6; color: #ffffff; }
+body.light .v2048 { background: #fcd34d; color: #78350f; box-shadow: 0 6px 15px rgba(251,191,36,0.5); }
+
+/* --- СТИЛИ ДЛЯ ТЕМЫ: OCEAN --- */
+body.ocean .v2 { background: #38bdf8; color: #0b1528; }
+body.ocean .v4 { background: #0ea5e9; color: #ffffff; }
+body.ocean .v8 { background: #0284c7; color: #ffffff; }
+body.ocean .v16 { background: #2563eb; color: #ffffff; }
+body.ocean .v32 { background: #3b82f6; color: #ffffff; }
+body.ocean .v64 { background: #6366f1; color: #ffffff; }
+body.ocean .v128 { background: #4f46e5; color: #ffffff; box-shadow: 0 0 15px rgba(79, 70, 229, 0.4); }
+body.ocean .v256 { background: #7c3aed; color: #ffffff; box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); }
+body.ocean .v512 { background: #9333ea; color: #ffffff; box-shadow: 0 0 25px rgba(147, 51, 234, 0.6); }
+body.ocean .v1024 { background: #c084fc; color: #0b1528; }
+body.ocean .v2048 { background: #f472b6; color: #ffffff; box-shadow: 0 0 30px #f472b6; }
+
+/* --- СТИЛИ ДЛЯ ТЕМЫ: SAKURA --- */
+body.sakura .v2 { background: #fff1f2; color: #9f1239; }
+body.sakura .v4 { background: #ffe4e6; color: #9f1239; }
+body.sakura .v8 { background: #fecdd3; color: #9f1239; }
+body.sakura .v16 { background: #fda4af; color: #4c0519; }
+body.sakura .v32 { background: #f43f5e; color: #ffffff; }
+body.sakura .v64 { background: #e11d48; color: #ffffff; }
+body.sakura .v128 { background: #be123c; color: #ffffff; }
+body.sakura .v256 { background: #9f1239; color: #ffffff; }
+body.sakura .v512 { background: #881337; color: #ffffff; }
+body.sakura .v1024 { background: #fb7185; color: #ffffff; box-shadow: 0 0 15px rgba(244,63,94,0.4); }
+body.sakura .v2048 { background: #ffffff; color: #e11d48; border: 2px solid #e11d48; box-shadow: 0 0 20px rgba(225,29,72,0.3); }
+
+/* --- СТИЛИ ДЛЯ ТЕМЫ: NEON --- */
+body.neon .v2 { background: #00f5ff; color: #030008; box-shadow: 0 0 8px rgba(0,245,255,0.4); }
+body.neon .v4 { background: #00bfff; color: #ffffff; box-shadow: 0 0 10px rgba(0,191,255,0.4); }
+body.neon .v8 { background: #7000ff; color: #ffffff; box-shadow: 0 0 12px rgba(112,0,255,0.4); }
+body.neon .v16 { background: #bd00ff; color: #ffffff; box-shadow: 0 0 14px rgba(189,0,255,0.5); }
+body.neon .v32 { background: #ff00b7; color: #ffffff; box-shadow: 0 0 16px rgba(255,0,183,0.6); }
+body.neon .v64 { background: #ff0055; color: #ffffff; box-shadow: 0 0 18px rgba(255,0,85,0.7); }
+body.neon .v128 { background: #ff3300; color: #ffffff; box-shadow: 0 0 20px #ff3300; }
+body.neon .v256 { background: #ffaa00; color: #030008; box-shadow: 0 0 22px #ffaa00; }
+body.neon .v512 { background: #e7fe00; color: #030008; box-shadow: 0 0 25px #e7fe00; }
+body.neon .v1024 { background: #00ff66; color: #030008; box-shadow: 0 0 28px #00ff66; }
+body.neon .v2048 { background: #ffffff; color: #030008; box-shadow: 0 0 35px #ffffff, 0 0 15px #00f5ff; }
+
+
+/* ==========================================================================
+   МЕНЮ НАСТРОЕК (SHEET UI)
+   ========================================================================== */
+.menu { position: fixed; inset: 0; display: none; background: rgba(3, 7, 18, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; opacity: 0; transition: opacity 0.3s ease; }
+.menu.open { display: flex; align-items: flex-end; justify-content: center; opacity: 1; }
+
+.sheet {
+    width: min(100vw, 440px);
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 24px; border-radius: 32px 32px 0 0;
+    max-height: 85dvh; overflow: auto;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+body.light .sheet { background: rgba(255, 255, 249, 0.9); border-color: rgba(0,0,0,0.06); box-shadow: 0 -10px 40px rgba(0,0,0,0.05); }
+body.sakura .sheet { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.05); }
+.menu.open .sheet { transform: translateY(0); }
+
+.section { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 12px; }
+
+.grid-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.grid-opts.themes { grid-template-columns: repeat(2, 1fr); }
+.grid-opts.themes .opt:last-child { grid-column: span 2; }
+
+.opt {
+    width: 100%; padding: 12px 8px; border: 1px solid var(--border); border-radius: 16px; 
+    background: var(--empty); color: var(--text); font-weight: 600; font-size: 13px;
+    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.opt:active { background: var(--panel); transform: scale(0.97); }
+.opt-wide { grid-column: span 3; background: var(--panel); font-weight: 700; font-size: 15px; padding: 16px; color: #38bdf8; margin-top: 5px;}
+body.light .opt-wide { color: #2563eb; }
+body.sakura .opt-wide { color: #e11d48; }
+
+/* Стили тумблера */
+.toggle-box { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--empty); padding: 14px 18px; border-radius: 16px; border: 1px solid var(--border); font-weight: 600; font-size: 14px; }
+.switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(128,128,128,0.3); transition: .3s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+input:checked + .slider { background-color: #22c55e; }
+input:checked + .slider:before { transform: translateX(20px); }
+
+.close-btn { background: none; border: 0; color: var(--text); font-size: 20px; opacity: 0.5; cursor: pointer; padding: 4px; }
+.close-btn:hover { opacity: 1; }
+</style>
+</head>
+
+<body class="dark">
+
+<div class="app">
+    <div class="top">
+        <div>
+            <h1>2048</h1>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <div class="score-box">
+                <div>
+                    <div class="score-label">Счет</div>
+                    <span id="score">0</span>
+                </div>
+                <div style="border-left: 1px solid var(--border); padding-left: 12px;">
+                    <div class="score-label">Рекорд</div>
+                    <span id="best">0</span>
+                </div>
+            </div>
+            <button class="btn" onclick="openMenu()">⚙️</button>
+        </div>
+    </div>
+
+    <div class="boardWrap">
+        <div id="board" class="board"></div>
+    </div>
+
+    <div id="keyboardControls" class="controls">
+        <div></div>
+        <button class="ctrl-btn" onclick="move('u')">▲</button>
+        <div></div>
+        <button class="ctrl-btn" onclick="move('l')">◀</button>
+        <button class="ctrl-btn" onclick="move('d')">▼</button>
+        <button class="ctrl-btn" onclick="move('r')">▶</button>
+    </div>
+</div>
+
+<div id="menu" class="menu" onclick="closeMenu(event)">
+    <div class="sheet">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0; font-size:22px; font-weight:800;">Настройки</h2>
+            <button class="close-btn" onclick="closeMenu(null, true)">✕</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎮 Кнопки управления</div>
+            <div class="toggle-box">
+                <span>Кнопки на экране</span>
+                <label class="switch">
+                    <input type="checkbox" id="btnToggle" onchange="toggleButtons(this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎨 Темы оформления</div>
+            <div class="grid-opts themes">
+                <button class="opt" onclick="theme('dark')"><span style="font-size:20px">🌙</span>Dark</button>
+                <button class="opt" onclick="theme('light')"><span style="font-size:20px">☀️</span>Light</button>
+                <button class="opt" onclick="theme('ocean')"><span style="font-size:20px">🌊</span>Ocean</button>
+                <button class="opt" onclick="theme('sakura')"><span style="font-size:20px">🌸</span>Sakura</button>
+                <button class="opt" onclick="theme('neon')"><span style="font-size:20px">⚡</span>Neon</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🧩 Размер поля и цель</div>
+            <div class="grid-opts">
+                <button class="opt" onclick="resize(4,2048)"><b style="font-size:15px">4×4</b><span>до 2048</span></button>
+                <button class="opt" onclick="resize(5,4096)"><b style="font-size:15px">5×5</b><span>до 4096</span></button>
+                <button class="opt" onclick="resize(6,8192)"><b style="font-size:15px">6×6</b><span>до 8192</span></button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚠️ Действие</div>
+            <button class="opt opt-wide" onclick="start()">🔄 Новая игра</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let size=4,target=2048,scoreV=0,g=[],prevG=[]
+
+function openMenu() {
+    const m = document.getElementById('menu');
+    m.style.display = 'flex';
+    setTimeout(() => m.classList.add('open'), 10);
+}
+
+function closeMenu(e, force = false) {
+    const m = document.getElementById('menu');
+    if (force || e.target === m) {
+        m.classList.remove('open');
+        setTimeout(() => m.style.display = 'none', 300);
+    }
+}
+
+function saveBest(){
+    localStorage.best=Math.max(+localStorage.best||0,scoreV)
+    best.textContent=localStorage.best
+}
+
+function mk(){return Array(size).fill().map(()=>Array(size).fill(0))}
+
+function add(){
+    let f=[]
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(!g[y][x]) f.push([y,x])
+    if(!f.length) return
+    let p=f[Math.random()*f.length|0]
+    g[p[0]][p[1]]=Math.random()<.9?2:4
+}
+
+function slide(r){
+    r=r.filter(Boolean)
+    for(let i=0;i<r.length-1;i++) {
+        if(r[i]==r[i+1]){
+            r[i]*=2
+            scoreV+=r[i]
+            r[i+1]=0
+        }
+    }
+    r=r.filter(Boolean)
+    while(r.length<size) r.push(0)
+    return r
+}
+
+function move(d){
+    let old=JSON.stringify(g)
+    prevG = JSON.parse(old)
+
+    if(d=="l") g=g.map(slide)
+    if(d=="r") g=g.map(r=>slide([...r].reverse()).reverse())
+
+    if(d=="u"||d=="d"){
+        for(let x=0;x<size;x++){
+            let c=g.map(r=>r[x])
+            if(d=="d") c.reverse()
+            c=slide(c)
+            if(d=="d") c.reverse()
+            for(let y=0;y<size;y++) g[y][x]=c[y]
+        }
+    }
+
+    if(old!=JSON.stringify(g)) {
+        add()
+        render(true)
+    }
+}
+
+function render(animate = false){
+    board.style.gridTemplateColumns=`repeat(${size},minmax(0,1fr))`
+    board.innerHTML=""
+
+    for(let y=0;y<size;y++){
+        for(let x=0;x<size;x++){
+            let v=g[y][x]
+            let d=document.createElement("div")
+            d.className="cell "+(v?"tile v"+v:"")
+            d.textContent=v||""
+            
+            if(animate && v && prevG[y] && prevG[y][x] !== v && prevG[y][x] !== 0) {
+                d.classList.add('merged');
+            }
+            
+            board.append(d)
+        }
+    }
+
+    score.textContent=scoreV
+    saveBest()
+}
+
+function start(){
+    scoreV=0
+    g=mk()
+    prevG=mk()
+    add();add()
+    closeMenu(null, true)
+    render()
+}
+
+function resize(s,t){
+    size=s
+    target=t
+    start()
+}
+
+function theme(t){
+    document.body.className=t
+    localStorage.theme=t
+}
+
+function toggleButtons(show) {
+    const controls = document.getElementById('keyboardControls');
+    controls.style.display = show ? 'grid' : 'none';
+    localStorage.showButtons = show ? '1' : '0';
+}
+
+// Управление кнопками клавиатуры
+document.onkeydown=e=>{
+    const k={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key]
+    if(k) {
+        e.preventDefault();
+        move(k)
+    }
+}
+
+// Управление свайпами
+let sx,sy
+board.ontouchstart=e=>{
+    sx=e.touches[0].clientX
+    sy=e.touches[0].clientY
+}
+board.ontouchmove=e=>{ e.preventDefault(); }
+
+board.ontouchend=e=>{
+    let dx=e.changedTouches[0].clientX-sx
+    let dy=e.changedTouches[0].clientY-sy
+    if(Math.abs(dx) > 15 || Math.abs(dy) > 15) {
+        move(Math.abs(dx)>Math.abs(dy)?(dx>0?"r":"l"):(dy>0?"d":"u"))
+    }
+}
+
+// Инициализация параметров
+const savedTheme = localStorage.theme || "dark";
+theme(savedTheme);
+
+const showButtons = localStorage.showButtons === '1';
+document.getElementById('btnToggle').checked = showButtons;
+toggleButtons(showButtons);
+
+best.textContent=localStorage.best||0
+start()
+</script>
+
+</body>
+</html>
