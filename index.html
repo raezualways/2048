@@ -9,9 +9,6 @@
 * { box-sizing: border-box; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
 html, body { margin: 0; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-user-select: none; user-select: none; }
 
-/* ==========================================================================
-   ЦВЕТОВЫЕ ПАЛИТРЫ (ТЕМЫ)
-   ========================================================================== */
 :root, body.dark {
     --bg: #0f172a;
     --panel: rgba(30, 41, 59, 0.7);
@@ -80,27 +77,14 @@ h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; backgro
 .ctrl-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text); border-radius: 16px; height: 54px; font-size: 22px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--shadow); touch-action: manipulation; }
 .ctrl-btn:active { transform: scale(0.92); background: var(--empty); }
 
-/* ==========================================================================
-   СТИЛИ ПЛИТОК ДЛЯ ВСЕХ ТЕМ (ЦВЕТА И ТЕКСТ)
-   ========================================================================== */
-/* DARK ТЕМА */
+/* СТИЛИ КУБОВ ДЛЯ ВСЕХ ТЕМ */
 body.dark .v2 { background: #334155 !important; color: #f8fafc !important; } body.dark .v4 { background: #475569 !important; color: #f8fafc !important; } body.dark .v8 { background: #f97316 !important; color: #fff !important; } body.dark .v16 { background: #ea580c !important; color: #fff !important; } body.dark .v32 { background: #ef4444 !important; color: #fff !important; } body.dark .v64 { background: #dc2626 !important; color: #fff !important; } body.dark .v128 { background: #06b6d4 !important; color: #0f172a !important; box-shadow: 0 0 12px rgba(6,182,212,0.4); } body.dark .v256 { background: #0ea5e9 !important; color: #fff !important; box-shadow: 0 0 16px rgba(14,165,233,0.4); } body.dark .v512 { background: #3b82f6 !important; color: #fff !important; box-shadow: 0 0 20px rgba(59,130,246,0.5); } body.dark .v1024 { background: #6366f1 !important; color: #fff !important; } body.dark .v2048 { background: #a855f7 !important; color: #fff !important; box-shadow: 0 0 25px #a855f7; }
-
-/* LIGHT ТЕМА */
 body.light .v2 { background: #cbd5e1 !important; color: #1e293b !important; } body.light .v4 { background: #94a3b8 !important; color: #f8fafc !important; } body.light .v8 { background: #ffedd5 !important; color: #ea580c !important; } body.light .v16 { background: #fed7aa !important; color: #c2410c !important; } body.light .v32 { background: #fdba74 !important; color: #9a3412 !important; } body.light .v64 { background: #f97316 !important; color: #fff !important; } body.light .v128 { background: #fca5a5 !important; color: #991b1b !important; } body.light .v256 { background: #ef4444 !important; color: #fff !important; } body.light .v512 { background: #93c5fd !important; color: #1e40af !important; } body.light .v1024 { background: #3b82f6 !important; color: #fff !important; } body.light .v2048 { background: #fcd34d !important; color: #78350f !important; box-shadow: 0 4px 12px rgba(251,191,36,0.4); }
-
-/* OCEAN ТЕМА */
 body.ocean .v2 { background: #38bdf8 !important; color: #0b1528 !important; } body.ocean .v4 { background: #0ea5e9 !important; color: #fff !important; } body.ocean .v8 { background: #0284c7 !important; color: #fff !important; } body.ocean .v16 { background: #2563eb !important; color: #fff !important; } body.ocean .v32 { background: #3b82f6 !important; color: #fff !important; } body.ocean .v64 { background: #6366f1 !important; color: #fff !important; } body.ocean .v128 { background: #4f46e5 !important; color: #fff !important; } body.ocean .v256 { background: #7c3aed !important; color: #fff !important; } body.ocean .v512 { background: #9333ea !important; color: #fff !important; } body.ocean .v1024 { background: #c084fc !important; color: #0b1528 !important; } body.ocean .v2048 { background: #f472b6 !important; color: #fff !important; box-shadow: 0 0 20px #f472b6; }
-
-/* SAKURA ТЕМА */
 body.sakura .v2 { background: #fff1f2 !important; color: #9f1239 !important; } body.sakura .v4 { background: #ffe4e6 !important; color: #9f1239 !important; } body.sakura .v8 { background: #fecdd3 !important; color: #9f1239 !important; } body.sakura .v16 { background: #fda4af !important; color: #4c0519 !important; } body.sakura .v32 { background: #f43f5e !important; color: #fff !important; } body.sakura .v64 { background: #e11d48 !important; color: #fff !important; } body.sakura .v128 { background: #be123c !important; color: #fff !important; } body.sakura .v256 { background: #9f1239 !important; color: #fff !important; } body.sakura .v512 { background: #881337 !important; color: #fff !important; } body.sakura .v1024 { background: #fb7185 !important; color: #fff !important; } body.sakura .v2048 { background: #fff !important; color: #e11d48 !important; border: 2px solid #e11d48; }
-
-/* NEON ТЕМА */
 body.neon .v2 { background: #00f5ff !important; color: #030008 !important; box-shadow: 0 0 8px rgba(0,245,255,0.4); } body.neon .v4 { background: #00bfff !important; color: #fff !important; box-shadow: 0 0 10px rgba(0,191,255,0.4); } body.neon .v8 { background: #7000ff !important; color: #fff !important; } body.neon .v16 { background: #bd00ff !important; color: #fff !important; } body.neon .v32 { background: #ff00b7 !important; color: #fff !important; } body.neon .v64 { background: #ff0055 !important; color: #fff !important; } body.neon .v128 { background: #ff3300 !important; color: #fff !important; } body.neon .v256 { background: #ffaa00 !important; color: #030008 !important; } body.neon .v512 { background: #e7fe00 !important; color: #030008 !important; } body.neon .v1024 { background: #00ff66 !important; color: #030008 !important; } body.neon .v2048 { background: #fff !important; color: #030008 !important; box-shadow: 0 0 25px #fff; }
 
-/* ==========================================================================
-   ИНТЕРФЕЙС МЕНЮ
-   ========================================================================== */
+/* МЕНЮ */
 .menu { position: fixed; inset: 0; display: none; background: rgba(3, 7, 18, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; opacity: 0; transition: opacity 0.25s ease; }
 .menu.open { display: flex; align-items: flex-end; justify-content: center; opacity: 1; }
 
@@ -211,27 +195,25 @@ input:checked + .slider:before { transform: translateX(20px); }
 </div>
 
 <script>
-// Проверяем наличие Telegram API безопасным способом
-const hasTg = typeof window.Telegram !== 'undefined' && window.Telegram.WebApp && window.Telegram.WebApp.initData;
-const tg = hasTg ? window.Telegram.WebApp : null;
+let size=4, scoreV=0, bestV=0, g=[], prevG=[];
+let playerName = "Игрок";
 
-if (tg) {
-    tg.ready();
-    tg.expand();
-}
-
-let size=4,target=2048,scoreV=0,bestV=0,g=[],prevG=[]
-let playerName = (tg && tg.initDataUnsafe?.user?.first_name) || (tg && tg.initDataUnsafe?.user?.username) || "Игрок";
+// Безопасное получение элементов DOM
+const board = document.getElementById('board');
+const score = document.getElementById('score');
+const best = document.getElementById('best');
 
 function openMenu(id) {
     const m = document.getElementById(id);
-    m.style.display = 'flex';
-    setTimeout(() => m.classList.add('open'), 10);
+    if(m) {
+        m.style.display = 'flex';
+        setTimeout(() => m.classList.add('open'), 10);
+    }
 }
 
 function closeMenu(e, id, force = false) {
     const m = document.getElementById(id);
-    if (force || e.target === m) {
+    if (m && (force || e.target === m)) {
         m.classList.remove('open');
         setTimeout(() => m.style.display = 'none', 250);
     }
@@ -242,6 +224,7 @@ function openLeaderboard() {
     openMenu('leaderMenu');
     
     const container = document.getElementById('leaderboardContent');
+    if(!container) return;
     container.innerHTML = "";
 
     let baseLeaders = [
@@ -249,8 +232,7 @@ function openLeaderboard() {
         { name: "Pavel_Net", score: 18240 },
         { name: "CryptoBoss", score: 12500 },
         { name: "Ton_Holder", score: 9640 },
-        { name: "Web3_Warrior", score: 7200 },
-        { name: "MemeCoin_King", score: 5120 }
+        { name: "Web3_Warrior", score: 7200 }
     ];
 
     baseLeaders.push({ name: "⭐ " + playerName + " (Вы)", score: bestV });
@@ -275,110 +257,95 @@ function openLeaderboard() {
 }
 
 function loadBest() {
-    if (tg && tg.CloudStorage) {
-        try {
-            tg.CloudStorage.getItem('best_score_v2', (err, value) => {
-                if (!err && value) { bestV = parseInt(value) || 0; } 
-                else { bestV = parseInt(localStorage.best) || 0; }
-                best.textContent = bestV;
-            });
-            return;
-        } catch(e) {}
-    }
-    bestV = parseInt(localStorage.best) || 0;
-    best.textContent = bestV;
+    bestV = parseInt(localStorage.getItem('best_score_v2')) || parseInt(localStorage.best) || 0;
+    if(best) best.textContent = bestV;
 }
 
 function saveBest(){
     if (scoreV > bestV) {
         bestV = scoreV;
-        best.textContent = bestV;
-        localStorage.best = bestV;
-        if (tg && tg.CloudStorage) {
-            try { tg.CloudStorage.setItem('best_score_v2', bestV.toString()); } catch(e){}
-        }
+        if(best) best.textContent = bestV;
+        localStorage.setItem('best_score_v2', bestV.toString());
     }
 }
 
 function shareResult() {
-    const text = `🔥 Я набрал ${scoreV} очков в 2048 Premium! Мой рекорд: ${bestV}. Сможешь побить? 🎮`;
-    if (tg) {
-        tg.openTelegramLink(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`);
-    } else {
-        window.open(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`, '_blank');
-    }
+    const text = `🔥 Я набрал ${scoreV} очков в 2048 Premium! Сможешь побить? 🎮`;
+    window.open(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`, '_blank');
 }
 
-function triggerHaptic(type) {
-    if (tg && tg.HapticFeedback) {
-        try {
-            if (type === 'merge') tg.HapticFeedback.notificationOccurred('success');
-            else tg.HapticFeedback.impactOccurred('light');
-        } catch(e) {}
+function mk(){
+    let arr = [];
+    for(let i=0; i<size; i++) {
+        arr.push(new Array(size).fill(0));
     }
+    return arr;
 }
-
-function mk(){return Array(size).fill().map(()=>Array(size).fill(0))}
 
 function add(){
-    let f=[]
-    for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(!g[y][x]) f.push([y,x])
-    if(!f.length) return
-    let p=f[Math.random()*f.length|0]
-    g[p[0]][p[1]]=Math.random()<.9?2:4
+    let f=[];
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(!g[y][x]) f.push([y,x]);
+    if(!f.length) return;
+    let p=f[Math.random()*f.length|0];
+    g[p[0]][p[1]]=Math.random()<.9?2:4;
 }
 
-function slide(r, mergedTrack){
-    r=r.filter(Boolean)
+function slide(r, m){
+    r=r.filter(Boolean);
     for(let i=0;i<r.length-1;i++) {
-        if(r[i]==r[i+1]){ r[i]*=2; scoreV+=r[i]; r[i+1]=0; if(mergedTrack) mergedTrack.count++; }
+        if(r[i]==r[i+1]){ r[i]*=2; scoreV+=r[i]; r[i+1]=0; }
     }
-    r=r.filter(Boolean); while(r.length<size) r.push(0); return r
+    r=r.filter(Boolean); while(r.length<size) r.push(0); return r;
 }
 
 function move(d){
-    let old=JSON.stringify(g); prevG = JSON.parse(old); let mTrack = { count: 0 };
-    if(d=="l") g=g.map(r => slide(r, mTrack))
-    if(d=="r") g=g.map(r=>slide([...r].reverse(), mTrack).reverse())
+    let old=JSON.stringify(g); prevG = JSON.parse(old);
+    if(d=="l") g=g.map(r => slide(r))
+    if(d=="r") g=g.map(r=>slide([...r].reverse()).reverse())
     if(d=="u"||d=="d"){
         for(let x=0;x<size;x++){
-            let c=g.map(r=>r[x]); if(d=="d") c.reverse(); c=slide(c, mTrack); if(d=="d") c.reverse()
-            for(let y=0;y<size;y++) g[y][x]=c[y]
+            let c=g.map(r=>r[x]); if(d=="d") c.reverse(); c=slide(c); if(d=="d") c.reverse();
+            for(let y=0;y<size;y++) g[y][x]=c[y];
         }
     }
-    if(old!=JSON.stringify(g)) { add(); triggerHaptic(mTrack.count > 0 ? 'merge' : 'slide'); render(true); }
+    if(old!=JSON.stringify(g)) { add(); render(true); }
 }
 
 function render(animate = false){
-    board.style.gridTemplateColumns=`repeat(${size},minmax(0,1fr))`
-    board.innerHTML=""
+    if(!board) return;
+    board.style.gridTemplateColumns=`repeat(${size},minmax(0,1fr))`;
+    board.innerHTML="";
     for(let y=0;y<size;y++){
         for(let x=0;x<size;x++){
-            let v=g[y][x], d=document.createElement("div")
-            d.className="cell "+(v?"tile v"+v:"")
-            d.textContent=v||""
+            let v=g[y][x], d=document.createElement("div");
+            d.className="cell "+(v?"tile v"+v:"");
+            d.textContent=v||"";
             if(animate && v && prevG[y] && prevG[y][x] !== v && prevG[y][x] !== 0) d.classList.add('merged');
-            board.append(d)
+            board.append(d);
         }
     }
-    score.textContent=scoreV; saveBest()
+    if(score) score.textContent=scoreV; saveBest();
 }
 
 function start(){ scoreV=0; g=mk(); prevG=mk(); add(); add(); closeMenu(null, 'mainMenu', true); render(); }
-function resize(s,t){ size=s; target=t; start(); }
 function theme(t){ document.body.className=t; localStorage.theme=t; }
-function toggleButtons(show) { document.getElementById('keyboardControls').style.display = show ? 'grid' : 'none'; localStorage.showButtons = show ? '1' : '0'; }
+function toggleButtons(show) { 
+    const ctrl = document.getElementById('keyboardControls');
+    if(ctrl) ctrl.style.display = show ? 'grid' : 'none'; 
+    localStorage.showButtons = show ? '1' : '0'; 
+}
 
 document.onkeydown=e=>{ const k={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key]; if(k) { e.preventDefault(); move(k); } }
-let sx,sy; board.ontouchstart=e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }; board.ontouchmove=e=>{ e.preventDefault(); }
+let sx,sy; document.body.onTouchStart = board.ontouchstart=e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }; board.ontouchmove=e=>{ e.preventDefault(); }
 board.ontouchend=e=>{
-    let dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy
-    if(Math.abs(dx) > 15 || Math.abs(dy) > 15) move(Math.abs(dx)>Math.abs(dy)?(dx>0?"r":"l"):(dy>0?"d":"u"))
+    let dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx) > 15 || Math.abs(dy) > 15) move(Math.abs(dx)>Math.abs(dy)?(dx>0?"r":"l"):(dy>0?"d":"u"));
 }
 
 theme(localStorage.theme || "dark");
 const showButtons = localStorage.showButtons === '1';
-document.getElementById('btnToggle').checked = showButtons; toggleButtons(showButtons);
+const btnT = document.getElementById('btnToggle');
+if(btnT) btnT.checked = showButtons; toggleButtons(showButtons);
 loadBest(); start();
 </script>
 </body>
