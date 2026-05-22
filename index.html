@@ -69,7 +69,7 @@ h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; backgro
 .boardWrap { flex: 1; display: grid; place-items: center; min-height: 0; padding: 10px 0; }
 .board { width: min(90vw, 85dvh, 460px); aspect-ratio: 1; display: grid; gap: 10px; padding: 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 20px 40px var(--shadow); will-change: transform; }
 
-.cell { width: 100%; height: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: clamp(18px, 6vw, 36px); border-radius: 16px; background: var(--empty); position: relative; }
+.cell { width: 100%; height: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: clamp(18px, 6vw, 36px); border-radius: 16px; background: var(--empty); position: relative; color: var(--text); }
 .tile { animation: spawn 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; box-shadow: 0 4px 10px rgba(0,0,0,0.15); will-change: transform, opacity; }
 .tile.merged { animation: pop 0.15s ease-in-out; }
 
@@ -81,22 +81,22 @@ h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; backgro
 .ctrl-btn:active { transform: scale(0.92); background: var(--empty); }
 
 /* ==========================================================================
-   СТИЛИ ПЛИТОК ДЛЯ ВСЕХ ТЕМ (ФИКС ИСЧЕЗНОВЕНИЯ КУБОВ)
+   СТИЛИ ПЛИТОК ДЛЯ ВСЕХ ТЕМ (ЦВЕТА И ТЕКСТ)
    ========================================================================== */
 /* DARK ТЕМА */
-body.dark .v2 { background: #334155; color: #f8fafc; } body.dark .v4 { background: #475569; color: #f8fafc; } body.dark .v8 { background: #f97316; color: #fff; } body.dark .v16 { background: #ea580c; color: #fff; } body.dark .v32 { background: #ef4444; color: #fff; } body.dark .v64 { background: #dc2626; color: #fff; } body.dark .v128 { background: #06b6d4; color: #0f172a; box-shadow: 0 0 12px rgba(6,182,212,0.4); } body.dark .v256 { background: #0ea5e9; color: #fff; box-shadow: 0 0 16px rgba(14,165,233,0.4); } body.dark .v512 { background: #3b82f6; color: #fff; box-shadow: 0 0 20px rgba(59,130,246,0.5); } body.dark .v1024 { background: #6366f1; color: #fff; } body.dark .v2048 { background: #a855f7; color: #fff; box-shadow: 0 0 25px #a855f7; }
+body.dark .v2 { background: #334155 !important; color: #f8fafc !important; } body.dark .v4 { background: #475569 !important; color: #f8fafc !important; } body.dark .v8 { background: #f97316 !important; color: #fff !important; } body.dark .v16 { background: #ea580c !important; color: #fff !important; } body.dark .v32 { background: #ef4444 !important; color: #fff !important; } body.dark .v64 { background: #dc2626 !important; color: #fff !important; } body.dark .v128 { background: #06b6d4 !important; color: #0f172a !important; box-shadow: 0 0 12px rgba(6,182,212,0.4); } body.dark .v256 { background: #0ea5e9 !important; color: #fff !important; box-shadow: 0 0 16px rgba(14,165,233,0.4); } body.dark .v512 { background: #3b82f6 !important; color: #fff !important; box-shadow: 0 0 20px rgba(59,130,246,0.5); } body.dark .v1024 { background: #6366f1 !important; color: #fff !important; } body.dark .v2048 { background: #a855f7 !important; color: #fff !important; box-shadow: 0 0 25px #a855f7; }
 
 /* LIGHT ТЕМА */
-body.light .v2 { background: #e2e8f0; color: #334155; } body.light .v4 { background: #cbd5e1; color: #1e293b; } body.light .v8 { background: #ffedd5; color: #ea580c; } body.light .v16 { background: #fed7aa; color: #c2410c; } body.light .v32 { background: #fdba74; color: #9a3412; } body.light .v64 { background: #f97316; color: #fff; } body.light .v128 { background: #fca5a5; color: #991b1b; } body.light .v256 { background: #ef4444; color: #fff; } body.light .v512 { background: #93c5fd; color: #1e40af; } body.light .v1024 { background: #3b82f6; color: #fff; } body.light .v2048 { background: #fcd34d; color: #78350f; box-shadow: 0 4px 12px rgba(251,191,36,0.4); }
+body.light .v2 { background: #cbd5e1 !important; color: #1e293b !important; } body.light .v4 { background: #94a3b8 !important; color: #f8fafc !important; } body.light .v8 { background: #ffedd5 !important; color: #ea580c !important; } body.light .v16 { background: #fed7aa !important; color: #c2410c !important; } body.light .v32 { background: #fdba74 !important; color: #9a3412 !important; } body.light .v64 { background: #f97316 !important; color: #fff !important; } body.light .v128 { background: #fca5a5 !important; color: #991b1b !important; } body.light .v256 { background: #ef4444 !important; color: #fff !important; } body.light .v512 { background: #93c5fd !important; color: #1e40af !important; } body.light .v1024 { background: #3b82f6 !important; color: #fff !important; } body.light .v2048 { background: #fcd34d !important; color: #78350f !important; box-shadow: 0 4px 12px rgba(251,191,36,0.4); }
 
 /* OCEAN ТЕМА */
-body.ocean .v2 { background: #38bdf8; color: #0b1528; } body.ocean .v4 { background: #0ea5e9; color: #fff; } body.ocean .v8 { background: #0284c7; color: #fff; } body.ocean .v16 { background: #2563eb; color: #fff; } body.ocean .v32 { background: #3b82f6; color: #fff; } body.ocean .v64 { background: #6366f1; color: #fff; } body.ocean .v128 { background: #4f46e5; color: #fff; } body.ocean .v256 { background: #7c3aed; color: #fff; } body.ocean .v512 { background: #9333ea; color: #fff; } body.ocean .v1024 { background: #c084fc; color: #0b1528; } body.ocean .v2048 { background: #f472b6; color: #fff; box-shadow: 0 0 20px #f472b6; }
+body.ocean .v2 { background: #38bdf8 !important; color: #0b1528 !important; } body.ocean .v4 { background: #0ea5e9 !important; color: #fff !important; } body.ocean .v8 { background: #0284c7 !important; color: #fff !important; } body.ocean .v16 { background: #2563eb !important; color: #fff !important; } body.ocean .v32 { background: #3b82f6 !important; color: #fff !important; } body.ocean .v64 { background: #6366f1 !important; color: #fff !important; } body.ocean .v128 { background: #4f46e5 !important; color: #fff !important; } body.ocean .v256 { background: #7c3aed !important; color: #fff !important; } body.ocean .v512 { background: #9333ea !important; color: #fff !important; } body.ocean .v1024 { background: #c084fc !important; color: #0b1528 !important; } body.ocean .v2048 { background: #f472b6 !important; color: #fff !important; box-shadow: 0 0 20px #f472b6; }
 
 /* SAKURA ТЕМА */
-body.sakura .v2 { background: #fff1f2; color: #9f1239; } body.sakura .v4 { background: #ffe4e6; color: #9f1239; } body.sakura .v8 { background: #fecdd3; color: #9f1239; } body.sakura .v16 { background: #fda4af; color: #4c0519; } body.sakura .v32 { background: #f43f5e; color: #fff; } body.sakura .v64 { background: #e11d48; color: #fff; } body.sakura .v128 { background: #be123c; color: #fff; } body.sakura .v256 { background: #9f1239; color: #fff; } body.sakura .v512 { background: #881337; color: #fff; } body.sakura .v1024 { background: #fb7185; color: #fff; } body.sakura .v2048 { background: #fff; color: #e11d48; border: 2px solid #e11d48; }
+body.sakura .v2 { background: #fff1f2 !important; color: #9f1239 !important; } body.sakura .v4 { background: #ffe4e6 !important; color: #9f1239 !important; } body.sakura .v8 { background: #fecdd3 !important; color: #9f1239 !important; } body.sakura .v16 { background: #fda4af !important; color: #4c0519 !important; } body.sakura .v32 { background: #f43f5e !important; color: #fff !important; } body.sakura .v64 { background: #e11d48 !important; color: #fff !important; } body.sakura .v128 { background: #be123c !important; color: #fff !important; } body.sakura .v256 { background: #9f1239 !important; color: #fff !important; } body.sakura .v512 { background: #881337 !important; color: #fff !important; } body.sakura .v1024 { background: #fb7185 !important; color: #fff !important; } body.sakura .v2048 { background: #fff !important; color: #e11d48 !important; border: 2px solid #e11d48; }
 
 /* NEON ТЕМА */
-body.neon .v2 { background: #00f5ff; color: #030008; box-shadow: 0 0 8px rgba(0,245,255,0.4); } body.neon .v4 { background: #00bfff; color: #fff; box-shadow: 0 0 10px rgba(0,191,255,0.4); } body.neon .v8 { background: #7000ff; color: #fff; } body.neon .v16 { background: #bd00ff; color: #fff; } body.neon .v32 { background: #ff00b7; color: #fff; } body.neon .v64 { background: #ff0055; color: #fff; } body.neon .v128 { background: #ff3300; color: #fff; } body.neon .v256 { background: #ffaa00; color: #030008; } body.neon .v512 { background: #e7fe00; color: #030008; } body.neon .v1024 { background: #00ff66; color: #030008; } body.neon .v2048 { background: #fff; color: #030008; box-shadow: 0 0 25px #fff; }
+body.neon .v2 { background: #00f5ff !important; color: #030008 !important; box-shadow: 0 0 8px rgba(0,245,255,0.4); } body.neon .v4 { background: #00bfff !important; color: #fff !important; box-shadow: 0 0 10px rgba(0,191,255,0.4); } body.neon .v8 { background: #7000ff !important; color: #fff !important; } body.neon .v16 { background: #bd00ff !important; color: #fff !important; } body.neon .v32 { background: #ff00b7 !important; color: #fff !important; } body.neon .v64 { background: #ff0055 !important; color: #fff !important; } body.neon .v128 { background: #ff3300 !important; color: #fff !important; } body.neon .v256 { background: #ffaa00 !important; color: #030008 !important; } body.neon .v512 { background: #e7fe00 !important; color: #030008 !important; } body.neon .v1024 { background: #00ff66 !important; color: #030008 !important; } body.neon .v2048 { background: #fff !important; color: #030008 !important; box-shadow: 0 0 25px #fff; }
 
 /* ==========================================================================
    ИНТЕРФЕЙС МЕНЮ
@@ -211,11 +211,17 @@ input:checked + .slider:before { transform: translateX(20px); }
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.ready(); tg.expand();
+// Проверяем наличие Telegram API безопасным способом
+const hasTg = typeof window.Telegram !== 'undefined' && window.Telegram.WebApp && window.Telegram.WebApp.initData;
+const tg = hasTg ? window.Telegram.WebApp : null;
+
+if (tg) {
+    tg.ready();
+    tg.expand();
+}
 
 let size=4,target=2048,scoreV=0,bestV=0,g=[],prevG=[]
-let playerName = tg.initDataUnsafe?.user?.first_name || tg.initDataUnsafe?.user?.username || "Игрок";
+let playerName = (tg && tg.initDataUnsafe?.user?.first_name) || (tg && tg.initDataUnsafe?.user?.username) || "Игрок";
 
 function openMenu(id) {
     const m = document.getElementById(id);
@@ -269,16 +275,18 @@ function openLeaderboard() {
 }
 
 function loadBest() {
-    try {
-        tg.CloudStorage.getItem('best_score_v2', (err, value) => {
-            if (!err && value) { bestV = parseInt(value) || 0; } 
-            else { bestV = parseInt(localStorage.best) || 0; }
-            best.textContent = bestV;
-        });
-    } catch(e) {
-        bestV = parseInt(localStorage.best) || 0;
-        best.textContent = bestV;
+    if (tg && tg.CloudStorage) {
+        try {
+            tg.CloudStorage.getItem('best_score_v2', (err, value) => {
+                if (!err && value) { bestV = parseInt(value) || 0; } 
+                else { bestV = parseInt(localStorage.best) || 0; }
+                best.textContent = bestV;
+            });
+            return;
+        } catch(e) {}
     }
+    bestV = parseInt(localStorage.best) || 0;
+    best.textContent = bestV;
 }
 
 function saveBest(){
@@ -286,20 +294,28 @@ function saveBest(){
         bestV = scoreV;
         best.textContent = bestV;
         localStorage.best = bestV;
-        try { tg.CloudStorage.setItem('best_score_v2', bestV.toString()); } catch(e){}
+        if (tg && tg.CloudStorage) {
+            try { tg.CloudStorage.setItem('best_score_v2', bestV.toString()); } catch(e){}
+        }
     }
 }
 
 function shareResult() {
     const text = `🔥 Я набрал ${scoreV} очков в 2048 Premium! Мой рекорд: ${bestV}. Сможешь побить? 🎮`;
-    tg.openTelegramLink(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`);
+    if (tg) {
+        tg.openTelegramLink(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`);
+    } else {
+        window.open(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`, '_blank');
+    }
 }
 
 function triggerHaptic(type) {
-    try {
-        if (type === 'merge') tg.HapticFeedback.notificationOccurred('success');
-        else tg.HapticFeedback.impactOccurred('light');
-    } catch(e) {}
+    if (tg && tg.HapticFeedback) {
+        try {
+            if (type === 'merge') tg.HapticFeedback.notificationOccurred('success');
+            else tg.HapticFeedback.impactOccurred('light');
+        } catch(e) {}
+    }
 }
 
 function mk(){return Array(size).fill().map(()=>Array(size).fill(0))}
