@@ -227,24 +227,33 @@ function openLeaderboard() {
     if(!container) return;
     container.innerHTML = "";
 
+    // Вот они, наши пасхальные легенды:
     let baseLeaders = [
-        { name: "👑 CyberDur0v", score: 24800 },
-        { name: "Pavel_Net", score: 18240 },
-        { name: "CryptoBoss", score: 12500 },
-        { name: "Ton_Holder", score: 9640 },
-        { name: "Web3_Warrior", score: 7200 }
+        { name: "👑 Ваня228", score: 65536 },
+        { name: "🦖 Арсенал", score: 32768 },
+        { name: "🕶️ Абоба", score: 16384 },
+        { name: "🦔 Ежидзе", score: 4096 },
+        { name: "☕ Левый тип", score: 2048 },
+        { name: "🐛 не ты", score: 1024 }
     ];
 
+    // Добавляем тебя в этот список
     baseLeaders.push({ name: "⭐ " + playerName + " (Вы)", score: bestV });
+    
+    // Сортируем, чтобы всё было честно — от большего к меньшему
     baseLeaders.sort((a, b) => b.score - a.score);
 
+    // Отрисовываем топ-8 на экране
     baseLeaders.slice(0, 8).forEach((player, index) => {
         const item = document.createElement('div');
         item.className = 'leader-item';
+        
+        // Красиво подсвечиваем строчку игрока золотым цветом
         if (player.name.includes("(Вы)")) {
             item.style.borderColor = "#eab308";
             item.style.background = "rgba(234, 179, 8, 0.1)";
         }
+        
         item.innerHTML = `
             <div class="leader-name">
                 <span class="leader-rank">#${index + 1}</span>
