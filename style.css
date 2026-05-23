@@ -1,35 +1,33 @@
 html, body {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
+    margin: 0; padding: 0; width: 100vw; height: 100vh;
     overflow: hidden;
-    overscroll-behavior: none;
-    touch-action: none;
+    overscroll-behavior: none; /* Блокировка pull-to-refresh */
+    touch-action: none; /* Запрет системных жестов браузера */
     position: fixed;
     background-color: #faf8ef;
-    
-    /* Чистая и правильная настройка отступа сверху */
     padding-top: calc(env(safe-area-inset-top, 20px) + 50px);
     box-sizing: border-box;
+    font-family: sans-serif;
 }
 
 #game-container {
-    margin: 0 auto;
+    display: flex; flex-direction: column; align-items: center;
     width: 100%;
-    display: flex;
-    justify-content: center;
-    /* Убедись, что контейнер не пытается вылезти за пределы экрана */
-    max-height: calc(100vh - env(safe-area-inset-top, 20px) - 50px);
 }
 
 #tileContainer {
     position: relative;
-    width: 340px;
-    height: 340px;
-    background: #bbada0;
-    border-radius: 6px;
-    /* Важно для защиты от случайных выделений при свайпах */
+    width: 340px; height: 340px;
+    background: #bbada0; border-radius: 6px;
     user-select: none;
-    touch-action: none; 
+    touch-action: none;
+}
+
+.tile {
+    position: absolute; width: 75px; height: 75px;
+    border-radius: 3px; font-weight: bold; font-size: 25px;
+    display: flex; justify-content: center; align-items: center;
+    transition: transform 0.15s ease-in-out;
+}
+/* Здесь ты можешь добавить стили .v2, .v4, .v8 и т.д. */
 }
