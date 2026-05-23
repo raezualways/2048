@@ -1,33 +1,45 @@
 html, body {
-    margin: 0; padding: 0; width: 100vw; height: 100vh;
+    margin: 0; 
+    padding: 0; 
+    width: 100vw; 
+    height: 100vh;
     overflow: hidden;
-    overscroll-behavior: none; /* Блокировка pull-to-refresh */
-    touch-action: none; /* Запрет системных жестов браузера */
-    position: fixed;
+    overscroll-behavior: none;
     background-color: #faf8ef;
-    padding-top: calc(env(safe-area-inset-top, 20px) + 50px);
+    /* Увеличил отступ до 80px, чтобы свайп был "в пустоте" */
+    padding-top: calc(env(safe-area-inset-top, 20px) + 60px);
     box-sizing: border-box;
     font-family: sans-serif;
+    touch-action: none;
 }
 
 #game-container {
-    display: flex; flex-direction: column; align-items: center;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    justify-content: flex-start;
     width: 100%;
+    /* Ограничиваем высоту, чтобы игра не прыгала */
+    height: calc(100vh - 80px);
 }
 
 #tileContainer {
     position: relative;
-    width: 340px; height: 340px;
-    background: #bbada0; border-radius: 6px;
+    width: 340px; 
+    height: 340px;
+    background: #bbada0; 
+    border-radius: 6px;
     user-select: none;
-    touch-action: none;
+    /* Самое важное для защиты от системных жестов внутри поля */
+    touch-action: none; 
 }
 
 .tile {
-    position: absolute; width: 75px; height: 75px;
-    border-radius: 3px; font-weight: bold; font-size: 25px;
+    position: absolute; 
+    width: 75px; height: 75px;
+    border-radius: 3px; 
+    font-weight: bold; 
+    font-size: 25px;
     display: flex; justify-content: center; align-items: center;
     transition: transform 0.15s ease-in-out;
-}
-/* Здесь ты можешь добавить стили .v2, .v4, .v8 и т.д. */
 }
