@@ -265,8 +265,9 @@
     let isTimerRunning = false;   
     let timerIntervalId = null;   
     let currentRng = null;        
+    let gameTime = 0; // Время текущей партии
     
-    let stats = { gamesPlayed: 0, wins: 0, totalScore: 0, bestTile: 0, totalTime: 0 };
+    let stats = { gamesPlayed: 0, wins: 0, totalScore: 0, bestTile: 0 };
 
     const achievements = {
         score1000: { name:'Первая тысяча', desc:'1,000 очков в игре', icon:'💯', earned:false },
@@ -371,12 +372,11 @@
     }
 
     function startTimer() {
-        if (isTimerRunning) return;
         stopTimer();
         isTimerRunning = true;
         timerIntervalId = setInterval(() => {
             if (!gameOver) {
-                stats.totalTime++;
+                gameTime++;
                 const statsTab = document.getElementById('tab-stats');
                 if (statsTab?.classList.contains('active')) { renderStats(); }
             }
@@ -386,6 +386,12 @@
     function stopTimer() {
         if (timerIntervalId) { clearInterval(timerIntervalId); timerIntervalId = null; }
         isTimerRunning = false;
+    }
+
+    function formatTime(totalSeconds) {
+        const m = Math.floor(totalSeconds / 60);
+        const s = totalSeconds % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
     function add() {
@@ -429,7 +435,8 @@
         historyStack.push({ 
             grid: JSON.parse(JSON.stringify(g)), 
             score: scoreV,
-            idCounter: idCounter
+            idCounter: idCounter,
+            gameTime: gameTime
         });
         if(historyStack.length > 30) historyStack.shift();
         
@@ -468,15 +475,12 @@
     function undo() {
         if(gameOver || !historyStack.length) return;
         const prev = historyStack.pop();
-        g = prev.grid; scoreV = prev.score; idCounter = prev.idCounter;
+        g = prev.grid; scoreV = prev.score; idCounter = prev.idCounter; gameTime = prev.gameTime || gameTime;
         movesLog.pop(); if(totalMovesCount > 0) totalMovesCount--;
         updateScore(); render(); checkGameState(); saveGame();
         showToast('Ход отменен! ↩️');
     }
 
-    // ========================================================
-    // ВОССТАНОВЛЕННАЯ ЛОГИКА: Окончание checkGameState и рендер
-    // ========================================================
     function checkGameState() {
         let hasTarget = false;
         for(let y=0; y<size; y++) for(let x=0; x<size; x++) {
@@ -513,7 +517,8 @@
 
         let cardHtml = `<div style="background:var(--empty); padding:14px; border-radius:16px; border:1px solid var(--border); width:100%; text-align:center; box-sizing:border-box;">
             <div style="font-size:13px; opacity:0.6; text-transform:uppercase;">Финальный счет</div>
-            <div style="font-size:32px; font-weight:900; color:#38bdf8; margin:4px 0;">${scoreV}</div>`;
+            <div style="font-size:32px; font-weight:900; color:#38bdf8; margin:4px 0;">${scoreV}</div>
+            <div style="font-size:12px; opacity:0.5; margin-bottom:10px;">Время партии: ${formatTime(gameTime)}</div>`;
 
         if (rivalScore !== null) {
             const winDuel = scoreV > rivalScore;
@@ -538,7 +543,7 @@
         if (maxTile >= 256 && !achievements.tile256.earned) earnAchievement('tile256');
         if (maxTile >= 1024 && !achievements.tile1024.earned) earnAchievement('tile1024');
         if (maxTile >= 2048 && !achievements.tile2048.earned) earnAchievement('tile2048');
-        if (maxTile >= 2048 && stats.totalTime < 120 && !achievements.speedrun.earned) earnAchievement('speedrun');
+        if (maxTile >= 2048 && gameTime < 120 && !achievements.speedrun.earned) earnAchievement('speedrun');
         if (totalMovesCount >= 500 && !achievements.tactician.earned) earnAchievement('tactician');
         if (size === 6 && !achievements.giantBoard.earned) earnAchievement('giantBoard');
     }
@@ -576,15 +581,12 @@
     function renderStats() {
         const c = document.getElementById('statsContainer');
         if (!c) return;
-        const h = Math.floor(stats.totalTime / 3600), m = Math.floor((stats.totalTime % 3600) / 60);
-        const league = bestV >= 50000 ? 'Elite' : bestV >= 20000 ? 'Gold' : bestV >= 10000 ? 'Silver' : 'Bronze';
         c.innerHTML = `
             <div style="width:100%; display:flex; flex-direction:column; gap:4px; padding:10px; box-sizing:border-box;">
                 <div>🎮 Сыграно игр: <b>${stats.gamesPlayed}</b></div>
                 <div>🏆 Всего побед: <b>${stats.wins}</b></div>
                 <div>⭐ Лучшая плитка: <b>${stats.bestTile}</b></div>
-                <div>🕒 Время в игре: <b>${h}ч ${m}м</b></div>
-                <div>🎖️ Ваша лига: <b style="color:#eab308;">${league}</b></div>
+                <div>🕒 Время текущей игры: <b>${formatTime(gameTime)}</b></div>
             </div>`;
     }
 
@@ -639,6 +641,7 @@
 
     function start() {
         gameOver = false; winShown = false; scoreV = 0; totalMovesCount = 0; movesLog = [];
+        gameTime = 0; 
         overlay.style.display = 'none';
         historyStack = [];
         
@@ -652,11 +655,11 @@
         g = generateGridFromSeed(size);
         updateScore();
         render();
-        startTimer();
+        startTimer(); 
     }
 
     function saveGame() {
-        localStorage.savedGame = JSON.stringify({ g, size, scoreV, idCounter, gameOver, winShown, currentSeed, movesLog, rivalScore });
+        localStorage.savedGame = JSON.stringify({ g, size, scoreV, idCounter, gameOver, winShown, currentSeed, movesLog, rivalScore, gameTime });
     }
 
     function loadGame() {
@@ -690,6 +693,7 @@
             gameOver = saved.gameOver; winShown = saved.winShown;
             currentSeed = saved.currentSeed; movesLog = saved.movesLog || [];
             rivalScore = saved.rivalScore ?? null;
+            gameTime = saved.gameTime || 0;
             currentRng = mulberry32(currentSeed);
             buildGridBackground(); updateScore(); render(); startTimer();
         } else {
