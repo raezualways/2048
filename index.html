@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="ru">
 <head>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/192.png">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>2048 Duel Edition</title>
@@ -246,6 +248,11 @@
 </div>
 
 <script>
+    if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
     // ==========================================
     // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И НАСТРОЙКИ ИГРЫ
     // ==========================================
