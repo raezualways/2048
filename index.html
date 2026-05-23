@@ -1,421 +1,954 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>2048 Premium</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-* { box-sizing: border-box; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
-html, body { margin: 0; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-user-select: none; user-select: none; }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <title>2048 Ghost Battle</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIjIwNDggR2hvc3QgQmF0dGxlIiwKICAic2hvcnRfbmFtZSI6ICIyMDQ4IEdCVCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIsCiAgImljb25zIjogW3sKICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA2NCA2NCc+JTNDcmVjdCB3aWR0aD0nNjQnIGhlaWdodD0nNjQnIHJ4PScxMicgZmlsbD0nIzYzNjZmMScvPiUzQ3RleHQgeD0nMzInIHk9JzM4JyBmb250LWZhbWlseT0nc2Fucy1zZXJpZicgZm9udC1zaXplPScyMCcgZmlsbD0nd2hpdGUnIGZvbnQtd2VpZ2h0PSdib2xkJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz4yMDQ4JTNDL3RleHQ+JTNDL3N2Zz4iLAogICAgInNpemVzIjogIjY0eDY0IiwKICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgfV0KfQ==">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f8fafc;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --border: #334155;
+            --grid-bg: #1e293b;
+            --cell-bg: #334155;
+            --bg-card: #1e293b;
+            --t2: #e2e8f0; --t4: #cbd5e1; --t8: #f97316; --t16: #ea580c; --t32: #ef4444; --t64: #dc2626;
+            --t128: #eab308; --t256: #ca8a04; --t512: #a855f7; --t1024: #9333ea; --t2048: #ec4899; --t4096: #db2777;
+        }
+        body.light {
+            --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --primary: #4f46e5; --primary-hover: #4338ca;
+            --border: #cbd5e1; --grid-bg: #e2e8f0; --cell-bg: #cbd5e1; --bg-card: #f1f5f9;
+            --t2: #0f172a; --t4: #1e293b;
+        }
+        body.cyberpunk {
+            --bg: #780016; --surface: #000000; --text: #00ff66; --primary: #ff0055; --primary-hover: #cc0044;
+            --border: #ff0055; --grid-bg: #1a0005; --cell-bg: #2a000a; --bg-card: #110003;
+            --t2: #00ff66; --t4: #00ffff; --t8: #ffff00; --t16: #ff00ff; --t32: #ff9900; --t64: #ff0055;
+            --t128: #00ff66; --t256: #00ffff; --t512: #ffff00; --t1024: #ff00ff; --t2048: #ff9900; --t4096: #ff0055;
+        }
+        body.matrix {
+            --bg: #000000; --surface: #050505; --text: #00ff00; --primary: #008800; --primary-hover: #00aa00;
+            --border: #00ff00; --grid-bg: #020202; --cell-bg: #080808; --bg-card: #030303;
+            --t2: #00ff00; --t4: #00ff00; --t8: #00ff00; --t16: #00ff00; --t32: #00ff00; --t64: #00ff00;
+            --t128: #00ff00; --t256: #00ff00; --t512: #00ff00; --t1024: #00ff00; --t2048: #00ff00; --t4096: #00ff00;
+        }
+        body.neon {
+            --bg: #03001e; --surface: #7303c0; --text: #fdeff9; --primary: #ec38bc; --primary-hover: #f355ce;
+            --border: #ec38bc; --grid-bg: #03001e; --cell-bg: #1f003a; --bg-card: #150029;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body {
+            margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; overflow-x: hidden; padding-bottom: 20px;
+        }
+        .header {
+            width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; padding: 15px 10px 5px;
+        }
+        .title-area h1 { font-size: 26px; margin: 0; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(45deg, var(--primary), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .title-area p { margin: 2px 0 0; font-size: 12px; opacity: 0.6; }
+        .score-container { display: flex; gap: 8px; }
+        .score-box { background: var(--surface); border: 1px solid var(--border); padding: 6px 14px; border-radius: 12px; text-align: center; min-width: 75px; position: relative; }
+        .score-box label { font-size: 9px; text-transform: uppercase; opacity: 0.5; display: block; font-weight: 700; letter-spacing: 0.5px; }
+        .score-box span { font-size: 18px; font-weight: 700; }
+        #scoreAdditionContainer { position: absolute; top: -15px; left: 0; width: 100%; text-align: center; pointer-events: none; }
+        .score-addition { color: #10b981; font-weight: 700; font-size: 14px; animation: floatUp .6s ease-out forwards; }
+        @keyframes floatUp { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-20px); } }
+        
+        .toolbar { width: 100%; max-width: 420px; display: flex; justify-content: space-between; padding: 5px 10px; gap: 8px; }
+        .btn { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
 
-:root, body.dark {
-    --bg: #0f172a;
-    --panel: rgba(30, 41, 59, 0.7);
-    --empty: rgba(51, 65, 85, 0.3);
-    --text: #f8fafc;
-    --border: rgba(255, 255, 255, 0.08);
-    --shadow: rgba(0, 0, 0, 0.3);
-}
-body.light {
-    --bg: #f8fafc;
-    --panel: rgba(241, 245, 249, 0.85);
-    --empty: #e2e8f0;
-    --text: #0f172a;
-    --border: rgba(0, 0, 0, 0.06);
-    --shadow: rgba(15, 23, 42, 0.08);
-}
-body.ocean {
-    --bg: #0b1528;
-    --panel: rgba(22, 38, 70, 0.75);
-    --empty: rgba(30, 58, 102, 0.4);
-    --text: #e2e8f0;
-    --border: rgba(56, 189, 248, 0.15);
-    --shadow: rgba(0, 0, 0, 0.4);
-}
-body.sakura {
-    --bg: #fff1f2;
-    --panel: rgba(255, 255, 255, 0.85);
-    --empty: #ffe4e6;
-    --text: #4c0519;
-    --border: rgba(251, 113, 133, 0.2);
-    --shadow: rgba(76, 5, 25, 0.05);
-}
-body.neon {
-    --bg: #030008;
-    --panel: rgba(22, 8, 43, 0.7);
-    --empty: rgba(45, 20, 83, 0.3);
-    --text: #ffffff;
-    --border: rgba(192, 38, 211, 0.25);
-    --shadow: rgba(0, 0, 0, 0.5);
-}
+        .board-wrapper { width: 100%; max-width: 420px; padding: 0 10px; margin-top: 5px; }
+        #board {
+            width: 100%; aspect-ratio: 1; background: var(--grid-bg); border: 2px solid var(--border); border-radius: 16px; position: relative; padding: 12px; overflow: hidden; touch-action: none;
+            display: grid; gap: 10px;
+        }
+        .cell {
+            background: var(--cell-bg); border-radius: 10px; width: 100%; height: 100%; position: absolute;
+            display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800;
+            transition: top 0.15s ease, left 0.15s ease, transform 0.1s ease; will-change: top, left, transform;
+        }
+        .tile { z-index: 2; color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .new-tile { animation: scaleUp 0.2s ease-out forwards; }
+        @keyframes scaleUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; }
-.app { width: 100%; max-width: 500px; height: 100dvh; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        /* Цвета плиток */
+        .v2 { background: var(--t2); color: #1e293b; } body.dark .v2, body.matrix .v2, body.cyberpunk .v2 { color: var(--bg); }
+        .v4 { background: var(--t4); color: #1e293b; } body.dark .v4, body.matrix .v4, body.cyberpunk .v4 { color: var(--bg); }
+        .v8 { background: var(--t8); } .v16 { background: var(--t16); } .v32 { background: var(--t32); } .v64 { background: var(--t64); }
+        .v128 { background: var(--t128); font-size: 20px; } .v256 { background: var(--t256); font-size: 20px; }
+        .v512 { background: var(--t512); font-size: 20px; } .v1024 { background: var(--t1024); font-size: 16px; }
+        .v2048 { background: var(--t2048); font-size: 16px; box-shadow: 0 0 12px var(--t2048); }
+        .v4096 { background: var(--t4096); font-size: 16px; box-shadow: 0 0 16px var(--t4096); }
 
-.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; background: linear-gradient(45deg, var(--text), rgba(128,128,128,0.4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* Стилизация призрака */
+        .cell.ghost {
+            background: rgba(168, 85, 247, 0.2) !important;
+            border: 2px dashed #a855f7 !important;
+            animation: pulseGhost 1.5s infinite ease-in-out;
+            z-index: 1;
+        }
+        @keyframes pulseGhost { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 
-.score-container { position: relative; }
-.score-box { background: var(--panel); border: 1px solid var(--border); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 8px 16px; border-radius: 16px; display: flex; gap: 14px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px var(--shadow); }
-.score-box span { color: var(--text); font-weight: 800; font-size: 16px; display: block; }
-.score-label { opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        /* Экранные меню и оверлеи */
+        .overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); z-index: 100;
+            display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .menu-modal {
+            background: var(--surface); border: 1px solid var(--border); width: 100%; max-width: 360px; border-radius: 20px; padding: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px;
+            transform: translateY(50px); opacity: 0; transition: transform 0.25s cubic-bezier(0.1, 1, 0.1, 1), opacity 0.25s;
+        }
+        .overlay.open .menu-modal { transform: translateY(0); opacity: 1; }
+        .menu-title { font-size: 20px; font-weight: 800; margin: 0 0 10px 0; text-align: center; }
+        .menu-btn {
+            background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.15s; width: 100%; margin-bottom: 4px;
+        }
+        .menu-btn:hover { background: var(--border); }
+        .menu-btn.accent { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .menu-btn.accent:hover { background: var(--primary-hover); }
 
-/* Анимация +очков */
-.score-addition { position: absolute; top: -20px; left: 25px; transform: translateX(-50%); color: #22c55e; font-weight: 800; font-size: 18px; animation: floatUp 0.6s ease-out forwards; pointer-events: none; }
-@keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-25px); } }
+        /* Вкладки в меню */
+        .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 10px; gap: 5px; }
+        .tab-btn { background: none; border: none; color: var(--text); padding: 8px 12px; font-size: 13px; font-weight: 600; opacity: 0.5; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { opacity: 1; border-color: var(--primary); }
+        .tab-content { display: none; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; padding-right: 4px; }
+        .tab-content.active { display: flex; }
 
-.btn { border: 1px solid var(--border); padding: 12px 16px; border-radius: 16px; background: var(--panel); color: var(--text); font-weight: 700; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px var(--shadow); }
-.btn:active { transform: scale(0.96); }
+        /* Опции настроек */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border); font-size: 14px; }
+        .toggle-box { display: flex; gap: 4px; }
+        .toggle-box button { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; cursor: pointer; }
+        .toggle-box button.active { background: var(--primary); border-color: var(--primary); color: #fff; }
 
-.boardWrap { flex: 1; display: grid; place-items: center; min-height: 0; padding: 10px 0; position: relative; }
-.board { width: min(90vw, 85dvh, 460px); aspect-ratio: 1; display: grid; gap: 10px; padding: 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 20px 40px var(--shadow); position: relative; }
+        /* Сетки настроек тем и размеров */
+        .theme-grid, .size-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .theme-grid button, .size-grid button { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        
+        /* Виртуальная крестовина */
+        #keyboardControls { width: 100%; max-width: 420px; display: none; grid-template-areas: ". up ." "left . right" ". down ."; gap: 8px; justify-content: center; margin-top: 15px; padding: 0 10px; }
+        #keyboardControls button { width: 55px; height: 50px; border-radius: 12px; font-size: 18px; }
 
-/* Экраны конца игры */
-.overlay { position: absolute; inset: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border-radius: 16px; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 5; animation: fadeIn 0.3s ease forwards; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.overlay h2 { font-size: 32px; font-weight: 900; margin: 0; }
+        /* Всплывающие уведомления */
+        #toast { position: fixed; bottom: 30px; background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; transform: translateY(100px); opacity: 0; transition: transform 0.3s, opacity 0.3s; z-index: 1000; pointer-events: none; border: 1px solid rgba(255,255,255,0.1); }
+        #toast.show { transform: translateY(0); opacity: 1; }
 
-.cell { width: 100%; height: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: clamp(18px, 6vw, 36px); border-radius: 16px; background: var(--empty); position: relative; color: var(--text); }
-.tile { animation: spawn 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; box-shadow: 0 4px 10px rgba(0,0,0,0.15); will-change: transform, opacity; }
-.tile.merged { animation: pop 0.15s ease-in-out; }
-
-@keyframes spawn { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.12); } 100% { transform: scale(1); } }
-
-.controls { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 260px; margin: 10px auto 0 auto; }
-.ctrl-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text); border-radius: 16px; height: 54px; font-size: 22px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--shadow); touch-action: manipulation; }
-.ctrl-btn:active { transform: scale(0.92); background: var(--empty); }
-
-/* ЦВЕТА ПЛИТОК */
-body.dark .v2 { background: #334155 !important; color: #f8fafc !important; } body.dark .v4 { background: #475569 !important; color: #f8fafc !important; } body.dark .v8 { background: #f97316 !important; color: #fff !important; } body.dark .v16 { background: #ea580c !important; color: #fff !important; } body.dark .v32 { background: #ef4444 !important; color: #fff !important; } body.dark .v64 { background: #dc2626 !important; color: #fff !important; } body.dark .v128 { background: #06b6d4 !important; color: #0f172a !important; box-shadow: 0 0 12px rgba(6,182,212,0.4); } body.dark .v256 { background: #0ea5e9 !important; color: #fff !important; box-shadow: 0 0 16px rgba(14,165,233,0.4); } body.dark .v512 { background: #3b82f6 !important; color: #fff !important; box-shadow: 0 0 20px rgba(59,130,246,0.5); } body.dark .v1024 { background: #6366f1 !important; color: #fff !important; } body.dark .v2048 { background: #a855f7 !important; color: #fff !important; box-shadow: 0 0 25px #a855f7; }
-body.light .v2 { background: #cbd5e1 !important; color: #1e293b !important; } body.light .v4 { background: #94a3b8 !important; color: #f8fafc !important; } body.light .v8 { background: #ffedd5 !important; color: #ea580c !important; } body.light .v16 { background: #fed7aa !important; color: #c2410c !important; } body.light .v32 { background: #fdba74 !important; color: #9a3412 !important; } body.light .v64 { background: #f97316 !important; color: #fff !important; } body.light .v128 { background: #fca5a5 !important; color: #991b1b !important; } body.light .v256 { background: #ef4444 !important; color: #fff !important; } body.light .v512 { background: #93c5fd !important; color: #1e40af !important; } body.light .v1024 { background: #3b82f6 !important; color: #fff !important; } body.light .v2048 { background: #fcd34d !important; color: #78350f !important; box-shadow: 0 4px 12px rgba(251,191,36,0.4); }
-body.ocean .v2 { background: #38bdf8 !important; color: #0b1528 !important; } body.ocean .v4 { background: #0ea5e9 !important; color: #fff !important; } body.ocean .v8 { background: #0284c7 !important; color: #fff !important; } body.ocean .v16 { background: #2563eb !important; color: #fff !important; } body.ocean .v32 { background: #3b82f6 !important; color: #fff !important; } body.ocean .v64 { background: #6366f1 !important; color: #fff !important; } body.ocean .v128 { background: #4f46e5 !important; color: #fff !important; } body.ocean .v256 { background: #7c3aed !important; color: #fff !important; } body.ocean .v512 { background: #9333ea !important; color: #fff !important; } body.ocean .v1024 { background: #c084fc !important; color: #0b1528 !important; } body.ocean .v2048 { background: #f472b6 !important; color: #fff !important; box-shadow: 0 0 20px #f472b6; }
-body.sakura .v2 { background: #fff1f2 !important; color: #9f1239 !important; } body.sakura .v4 { background: #ffe4e6 !important; color: #9f1239 !important; } body.sakura .v8 { background: #fecdd3 !important; color: #9f1239 !important; } body.sakura .v16 { background: #fda4af !important; color: #4c0519 !important; } body.sakura .v32 { background: #f43f5e !important; color: #fff !important; } body.sakura .v64 { background: #e11d48 !important; color: #fff !important; } body.sakura .v128 { background: #be123c !important; color: #fff !important; } body.sakura .v256 { background: #9f1239 !important; color: #fff !important; } body.sakura .v512 { background: #881337 !important; color: #fff !important; } body.sakura .v1024 { background: #fb7185 !important; color: #fff !important; } body.sakura .v2048 { background: #fff !important; color: #e11d48 !important; border: 2px solid #e11d48; }
-body.neon .v2 { background: #00f5ff !important; color: #030008 !important; box-shadow: 0 0 8px rgba(0,245,255,0.4); } body.neon .v4 { background: #00bfff !important; color: #fff !important; box-shadow: 0 0 10px rgba(0,191,255,0.4); } body.neon .v8 { background: #7000ff !important; color: #fff !important; } body.neon .v16 { background: #bd00ff !important; color: #fff !important; } body.neon .v32 { background: #ff00b7 !important; color: #fff !important; } body.neon .v64 { background: #ff0055 !important; color: #fff !important; } body.neon .v128 { background: #ff3300 !important; color: #fff !important; } body.neon .v256 { background: #ffaa00 !important; color: #030008 !important; } body.neon .v512 { background: #e7fe00 !important; color: #030008 !important; } body.neon .v1024 { background: #00ff66 !important; color: #030008 !important; } body.neon .v2048 { background: #fff !important; color: #030008 !important; box-shadow: 0 0 25px #fff; }
-
-.menu { position: fixed; inset: 0; display: none; background: rgba(3, 7, 18, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; opacity: 0; transition: opacity 0.25s ease; }
-.menu.open { display: flex; align-items: flex-end; justify-content: center; opacity: 1; }
-.sheet { width: min(100vw, 440px); background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 24px; border-radius: 32px 32px 0 0; max-height: 85dvh; overflow: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-body.light .sheet { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.06); }
-.menu.open .sheet { transform: translateY(0); }
-.section { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
-.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 10px; }
-.grid-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.grid-opts.themes { grid-template-columns: repeat(2, 1fr); }
-.grid-opts.themes .opt:last-child { grid-column: span 2; }
-.opt { width: 100%; padding: 12px 8px; border: 1px solid var(--border); border-radius: 16px; background: var(--empty); color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.opt:active { background: var(--panel); transform: scale(0.97); }
-.opt-wide { grid-column: span 3; background: var(--panel); font-weight: 700; font-size: 15px; padding: 16px; color: #38bdf8; margin-top: 5px;}
-.opt-share { color: #22c55e !important; }
-.opt-leader { color: #eab308 !important; }
-.toggle-box { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--empty); padding: 14px 18px; border-radius: 16px; border: 1px solid var(--border); font-weight: 600; font-size: 14px; }
-.switch { position: relative; display: inline-block; width: 46px; height: 26px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(128,128,128,0.3); transition: .3s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-input:checked + .slider { background-color: #22c55e; }
-input:checked + .slider:before { transform: translateX(20px); }
-.close-btn { background: none; border: 0; color: var(--text); font-size: 20px; opacity: 0.5; cursor: pointer; padding: 4px; }
-.leader-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-.leader-item { display: flex; justify-content: space-between; align-items: center; background: var(--empty); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border); font-weight: 600; }
-.leader-name { display: flex; align-items: center; gap: 10px; }
-.leader-rank { font-weight: 800; color: #eab308; width: 20px; }
-.leader-score { font-weight: 800; color: #38bdf8; }
-</style>
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    </style>
 </head>
-
 <body class="dark">
 
-<div class="app">
-    <div class="top">
-        <h1>2048</h1>
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <div class="score-container">
-                <div class="score-box">
-                    <div><div class="score-label">Счет</div><span id="score">0</span></div>
-                    <div style="border-left: 1px solid var(--border); padding-left: 12px;"><div class="score-label">Рекорд</div><span id="best">0</span></div>
-                </div>
+    <div class="header">
+        <div class="title-area">
+            <h1>2048</h1>
+            <p>Ghost Battle Edition</p>
+        </div>
+        <div class="score-container">
+            <div class="score-box">
+                <label>Счет</label>
+                <span id="score">0</span>
                 <div id="scoreAdditionContainer"></div>
             </div>
-            <button class="btn" onclick="undo()" title="Шаг назад">↩️</button>
-            <button class="btn" onclick="openMenu('mainMenu')">⚙️</button>
-        </div>
-    </div>
-
-    <div class="boardWrap">
-        <div id="board" class="board"></div>
-        <div id="gameOverOverlay" class="overlay">
-            <h2 id="overlayTitle">Игра окончена!</h2>
-            <button class="btn" style="padding: 16px 32px; font-size: 16px;" onclick="start()">Играть снова 🔄</button>
-        </div>
-    </div>
-
-    <div id="keyboardControls" class="controls">
-        <div></div><button class="ctrl-btn" onclick="move('u')">▲</button><div></div>
-        <button class="ctrl-btn" onclick="move('l')">◀</button><button class="ctrl-btn" onclick="move('d')">▼</button><button class="ctrl-btn" onclick="move('r')">▶</button>
-    </div>
-</div>
-
-<div id="mainMenu" class="menu" onclick="closeMenu(event, 'mainMenu')">
-    <div class="sheet">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 style="margin:0; font-size:22px; font-weight:800;">Настройки</h2>
-            <button class="close-btn" onclick="closeMenu(null, 'mainMenu', true)">✕</button>
-        </div>
-        <div class="section">
-            <div class="section-title">🏆 Соревнования</div>
-            <button class="opt opt-wide opt-leader" onclick="openLeaderboard()">🥇 Таблица лидеров</button>
-            <button class="opt opt-wide opt-share" onclick="shareResult()">🚀 Поделиться рекордом</button>
-        </div>
-        <div class="section">
-            <div class="section-title">🎮 Управление</div>
-            <div class="toggle-box">
-                <span>Кнопки на экране</span>
-                <label class="switch">
-                    <input type="checkbox" id="btnToggle" onchange="toggleButtons(this.checked)">
-                    <span class="slider"></span>
-                </label>
+            <div class="score-box">
+                <label>Лучший</label>
+                <span id="best">0</span>
             </div>
         </div>
-        <div class="section">
-            <div class="section-title">🎨 Темы оформления</div>
-            <div class="grid-opts themes">
-                <button class="opt" onclick="theme('dark')">🌙 Dark</button>
-                <button class="opt" onclick="theme('light')">☀️ Light</button>
-                <button class="opt" onclick="theme('ocean')">🌊 Ocean</button>
-                <button class="opt" onclick="theme('sakura')">🌸 Sakura</button>
-                <button class="opt" onclick="theme('neon')">⚡ Neon</button>
+    </div>
+
+    <div class="toolbar">
+        <button class="btn btn-primary" onclick="openMenu('mainMenu')">⚙️ Меню</button>
+        <button class="btn" onclick="undo()">↩️ Отмена</button>
+        <button class="btn" onclick="start()">🔄 Заново</button>
+    </div>
+
+    <div class="board-wrapper">
+        <div id="board"></div>
+    </div>
+
+    <div id="keyboardControls">
+        <button class="btn" style="grid-area: up;" onclick="move('u')">▲</button>
+        <button class="btn" style="grid-area: left;" onclick="move('l')">◀</button>
+        <button class="btn" style="grid-area: right;" onclick="move('r')">▶</button>
+        <button class="btn" style="grid-area: down;" onclick="move('d')">▼</button>
+    </div>
+
+    <div id="mainMenu" class="overlay" onclick="closeMenu(e, 'mainMenu')">
+        <div class="menu-modal">
+            <h3 class="menu-title">Игровой Центр</h3>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="game">Режимы</button>
+                <button class="tab-btn" data-tab="settings">Опции</button>
+                <button class="tab-semibold tab-btn" data-tab="stats">Статистика</button>
+            </div>
+
+            <div id="tab-game" class="tab-content active">
+                <button class="menu-btn accent" onclick="start(); closeMenu(null,'mainMenu',true)">🎮 Классическая игра</button>
+                <button class="menu-btn" onclick="showDailyChallenge(); closeMenu(null,'mainMenu',true)">📅 Daily Challenge</button>
+                <button class="menu-btn" onclick="openMenu('ghostMenu')">👻 Бросить вызов Призраку</button>
+            </div>
+
+            <div id="tab-settings" class="tab-content">
+                <div class="setting-row">
+                    <span>Звуковые эффекты</span>
+                    <div class="toggle-box">
+                        <button id="s-sound-on" class="active" onclick="toggleSound(true); document.getElementById('s-sound-off').classList.remove('active'); this.classList.add('active')">ВКЛ</button>
+                        <button id="s-sound-off" onclick="toggleSound(false); document.getElementById('s-sound-on').classList.remove('active'); this.classList.add('active')">ВЫКЛ</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <span>Виброотклик</span>
+                    <div class="toggle-box">
+                        <button id="s-vib-on" class="active" onclick="toggleVibro(true); document.getElementById('s-vib-off').classList.remove('active'); this.classList.add('active')">ВКЛ</button>
+                        <button id="s-vib-off" onclick="toggleVibro(false); document.getElementById('s-vib-on').classList.remove('active'); this.classList.add('active')">ВЫКЛ</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <span>Экранные кнопки</span>
+                    <div class="toggle-box">
+                        <button id="s-btn-on" onclick="toggleButtons(true); document.getElementById('s-btn-off').classList.remove('active'); this.classList.add('active')">ВКЛ</button>
+                        <button id="s-btn-off" class="active" onclick="toggleButtons(false); document.getElementById('s-btn-on').classList.remove('active'); this.classList.add('active')">ВЫКЛ</button>
+                    </div>
+                </div>
+                <div style="font-size:12px; font-weight:700; opacity:0.6; margin-top:4px;">Размер поля:</div>
+                <div class="size-grid">
+                    <button onclick="changeSize(3)">3x3</button>
+                    <button onclick="changeSize(4)">4x4</button>
+                    <button onclick="changeSize(5)">5x5</button>
+                </div>
+                <div style="font-size:12px; font-weight:700; opacity:0.6; margin-top:4px;">Визуальная тема:</div>
+                <div class="theme-grid">
+                    <button onclick="theme('dark')">Dark</button>
+                    <button onclick="theme('light')">Light</button>
+                    <button onclick="theme('matrix')">Matrix</button>
+                    <button onclick="theme('cyberpunk')">Cyber</button>
+                    <button onclick="theme('neon')">Neon</button>
+                </div>
+            </div>
+
+            <div id="tab-stats" class="tab-content">
+                <div id="statsContainer" style="display:flex; flex-direction:column; gap:4px; font-size:13px;"></div>
+                <div style="font-size:12px; font-weight:700; opacity:0.6; margin-top:6px;">Зал Славы:</div>
+                <div id="achievementsContainer" style="display:flex; flex-direction:column; gap:4px;"></div>
+            </div>
+
+            <button class="menu-btn" style="margin-top:10px; background:rgba(255,255,255,0.05)" onclick="closeMenu(null, 'mainMenu', true)">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="ghostMenu" class="overlay" onclick="closeMenu(e, 'ghostMenu')">
+        <div class="menu-modal">
+            <h3 class="menu-title">Матчи с Призраками</h3>
+            <p style="font-size:12px; opacity:0.7; text-align:center; margin:-8px 0 10px 0;">Играйте против записей своих лучших сессий или бросайте вызов друзьям!</p>
+            
+            <button class="menu-btn accent" onclick="challengeFriend()">🔗 Поделиться текущей сессией</button>
+            
+            <div style="font-size:12px; font-weight:700; opacity:0.6; margin:6px 0 2px 0;">Ваши сохраненные призраки:</div>
+            <div id="ghostListContainer" style="max-height:180px; overflow-y:auto; background:var(--bg); border-radius:10px; border:1px solid var(--border); padding:4px;">
+                </div>
+
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button class="menu-btn" style="margin:0;" onclick="closeMenu(null, 'ghostMenu', true); openMenu('mainMenu')">Назад</button>
+                <button class="menu-btn" style="margin:0; background:rgba(255,255,255,0.05)" onclick="closeMenu(null, 'ghostMenu', true)">Закрыть</button>
             </div>
         </div>
-        <div class="section"><button class="opt opt-wide" onclick="start()">🔄 Новая игра</button></div>
     </div>
-</div>
 
-<div id="leaderMenu" class="menu" onclick="closeMenu(event, 'leaderMenu')">
-    <div class="sheet">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 style="margin:0; font-size:22px; font-weight:800;">Топ игроков мира</h2>
-            <button class="close-btn" onclick="closeMenu(null, 'leaderMenu', true)">✕</button>
+    <div id="gameOverOverlay" class="overlay">
+        <div class="menu-modal" style="text-align:center;">
+            <h2 id="overlayTitle" style="margin:0; font-size:24px;">Игра окончена!</h2>
+            <div id="resultCardContainer"></div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:15px; width:100%;">
+                <button class="menu-btn accent" onclick="shareResult()">📢 Поделиться результатом</button>
+                <button class="menu-btn" onclick="start()">🔄 Играть снова</button>
+                <button class="menu-btn" style="background:rgba(255,255,255,0.05)" onclick="document.getElementById('gameOverOverlay').style.display='none'">Просмотр поля</button>
+            </div>
         </div>
-        <div id="leaderboardContent" class="leader-list"></div>
     </div>
-</div>
 
-<script>
-let size=4, scoreV=0, bestV=0, g=[], prevG=[];
-let historyGrid = null, historyScore = 0; // Для функции Undo
-let playerName = "Игрок";
+    <div id="pauseOverlay" class="overlay" onclick="togglePause()">
+        <div class="menu-modal" style="text-align:center;" onclick="event.stopPropagation()">
+            <h3 class="menu-title">Пауза</h3>
+            <button class="menu-btn accent" onclick="togglePause()">▶ Продолжить</button>
+            <button class="menu-btn" onclick="start()">🔄 Перезапустить</button>
+        </div>
+    </div>
 
-const board = document.getElementById('board');
-const score = document.getElementById('score');
-const best = document.getElementById('best');
-const overlay = document.getElementById('gameOverOverlay');
-const overlayTitle = document.getElementById('overlayTitle');
+    <div id="toast">Ссылка скопирована!</div>
 
-function openMenu(id) {
-    const m = document.getElementById(id);
-    if(m) { m.style.display = 'flex'; setTimeout(() => m.classList.add('open'), 10); }
-}
-
-function closeMenu(e, id, force = false) {
-    const m = document.getElementById(id);
-    if (m && (force || e.target === m)) { m.classList.remove('open'); setTimeout(() => m.style.display = 'none', 250); }
-}
-
-function openLeaderboard() {
-    closeMenu(null, 'mainMenu', true);
-    openMenu('leaderMenu');
-    const container = document.getElementById('leaderboardContent');
-    if(!container) return;
-    container.innerHTML = "";
-    
-    let baseLeaders = [
-        { name: "👑 Satoshi_Nakamoto", score: 65536 },
-        { name: "🦖 Chrome_Offline", score: 32768 },
-        { name: "🕶️ Neo", score: 16384 },
-        { name: "🦔 Sanic_Fast", score: 4096 },
-        { name: "☕ Java_Developer", score: 2048 },
-        { name: "🐛 Bug_Feature", score: 1024 }
-    ];
-    
-    baseLeaders.push({ name: "⭐ " + playerName + " (Вы)", score: bestV });
-    baseLeaders.sort((a, b) => b.score - a.score);
-    baseLeaders.slice(0, 8).forEach((player, index) => {
-        const item = document.createElement('div');
-        item.className = 'leader-item';
-        if (player.name.includes("(Вы)")) { item.style.borderColor = "#eab308"; item.style.background = "rgba(234, 179, 8, 0.1)"; }
-        item.innerHTML = `<div class="leader-name"><span class="leader-rank">#${index + 1}</span><span>${player.name}</span></div><span class="leader-score">${player.score}</span>`;
-        container.appendChild(item);
-    });
-}
-
-function loadBest() {
-    bestV = parseInt(localStorage.getItem('best_score_v2')) || parseInt(localStorage.best) || 0;
-    if(best) best.textContent = bestV;
-}
-
-function saveBest(){
-    if (scoreV > bestV) {
-        bestV = scoreV;
-        if(best) best.textContent = bestV;
-        localStorage.setItem('best_score_v2', bestV.toString());
-    }
-}
-
-function shareResult() {
-    const text = `🔥 Я набрал ${scoreV} очков в 2048 Premium! Сможешь побить? 🎮`;
-    window.open(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`, '_blank');
-}
-
-function mk(){
-    let arr = [];
-    for(let i=0; i<size; i++) arr.push(new Array(size).fill(0));
-    return arr;
-}
-
-function add(){
-    let f=[];
-    for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(!g[y][x]) f.push([y,x]);
-    if(!f.length) return;
-    let p=f[Math.random()*f.length|0];
-    g[p[0]][p[1]]=Math.random()<.9?2:4;
-}
-
-function slide(r, scoreTracker){
-    r=r.filter(Boolean);
-    for(let i=0;i<r.length-1;i++) { 
-        if(r[i]==r[i+1]){ 
-            r[i]*=2; 
-            scoreV+=r[i]; 
-            scoreTracker.added += r[i];
-            r[i+1]=0; 
-        } 
-    }
-    r=r.filter(Boolean); while(r.length<size) r.push(0); return r;
-}
-
-function move(d){
-    if(overlay.style.display === 'flex') return;
-    
-    let old=JSON.stringify(g); 
-    let scoreTracker = { added: 0 };
-    
-    // Сохраняем стейт для Undo перед ходом
-    let tempHistoryGrid = JSON.parse(old);
-    let tempHistoryScore = scoreV;
-
-    prevG = JSON.parse(old);
-    
-    if(d=="l") g=g.map(r => slide(r, scoreTracker))
-    if(d=="r") g=g.map(r=>slide([...r].reverse(), scoreTracker).reverse())
-    if(d=="u"||d=="d"){
-        for(let x=0;x<size;x++){
-            let c=g.map(r=>r[x]); if(d=="d") c.reverse(); c=slide(c, scoreTracker); if(d=="d") c.reverse();
-            for(let y=0;y<size;y++) g[y][x]=c[y];
+    <script>
+        // PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', e => {
+                    e.waitUntil(
+                        caches.open('2048-ghost-v1').then(cache => cache.addAll(['/']))
+                    );
+                    self.skipWaiting();
+                });
+                self.addEventListener('fetch', e => {
+                    e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], {type: 'application/javascript'});
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).catch(() => {});
         }
-    }
-    
-    if(old!=JSON.stringify(g)) { 
-        historyGrid = tempHistoryGrid;
-        historyScore = tempHistoryScore;
-        add(); 
-        if(scoreTracker.added > 0) showScoreAddition(scoreTracker.added);
-        render(true); 
-        checkGameState();
-    }
-}
 
-function showScoreAddition(amount) {
-    const container = document.getElementById('scoreAdditionContainer');
-    if(!container) return;
-    container.innerHTML = "";
-    const el = document.createElement('div');
-    el.className = 'score-addition';
-    el.textContent = `+${amount}`;
-    container.appendChild(el);
-}
+        // Локальное хранилище
+        const LS = {
+            get(key, def) { try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch(e) { return def; } },
+            set(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+        };
 
-function undo() {
-    if(historyGrid && overlay.style.display !== 'flex') {
-        g = JSON.parse(JSON.stringify(historyGrid));
-        scoreV = historyScore;
-        historyGrid = null; // Можно вернуть только 1 раз за ход
-        render();
-    }
-}
+        // Генератор случайных чисел (ГПЧ)
+        function mulberry32(a) { 
+            return function() { 
+                let t = a += 0x6D2B79F5; 
+                t = Math.imul(t ^ t >>> 15, t | 1); 
+                t ^= t + Math.imul(t ^ t >>> 7, t | 61); 
+                return ((t ^ t >>> 14) >>> 0) / 4294967296; 
+            } 
+        }
 
-function checkGameState() {
-    // Проверка на победу (2048)
-    for(let y=0;y<size;y++) {
-        for(let x=0;x<size;x++) {
-            if(g[y][x] === 2048) {
-                overlayTitle.textContent = "Вы победили! 🎉";
-                overlay.style.display = 'flex';
-                return;
+        // Состояние игры
+        let size = 4;
+        let scoreV = 0;
+        let bestV = LS.get('best_score_v2', 0);
+        let g = [];
+        let prevG = null; 
+        let historyStack = [];
+        let cellElements = [];
+        let gameOver = false;
+        let winShown = false;
+        let paused = false;
+        let currentSeed = null;
+        let movesLog = [];
+        let ghostMode = null;
+        let ghostGrids = [];
+        let newTiles = new Set();
+
+        let audioCtx = null;
+        let soundEnabled = LS.get('soundEnabled', '1') === '1';
+        let vibroEnabled = LS.get('vibroEnabled', '1') === '1';
+
+        let stats = { gamesPlayed: 0, wins: 0, totalScore: 0, bestTile: 0, totalTime: 0, startTime: 0 };
+        const achievements = {
+            score1000: { name:'Первая тысяча', desc:'1000 очков', icon:'💯', earned:false },
+            score10000: { name:'Десятка', desc:'10000 очков', icon:'🔥', earned:false },
+            tile256: { name:'256', desc:'Плитка 256', icon:'🧱', earned:false },
+            tile1024: { name:'1024', desc:'Плитка 1024', icon:'💎', earned:false },
+            tile2048: { name:'2048!', desc:'Победить', icon:'👑', earned:false },
+            tile4096: { name:'4096', desc:'Плитка 4096', icon:'🌟', earned:false },
+            undo5: { name:'Отступник', desc:'5 отмен', icon:'↩️', earned:false, count:0 },
+            games10: { name:'Заядлый', desc:'10 игр', icon:'🎮', earned:false },
+            speedRun: { name:'Быстрый', desc:'500 за 30с', icon:'⚡', earned:false },
+            perfectStart: { name:'Идеально', desc:'2 плитки 4', icon:'🍀', earned:false },
+            mergeMaster: { name:'Мастер', desc:'10 слияний', icon:'💥', earned:false, mergeCount:0 },
+            noUndoWin: { name:'Честная победа', desc:'Без отмен', icon:'🏅', earned:false }
+        };
+
+        // DOM Элементы
+        const boardEl = document.getElementById('board');
+        const scoreEl = document.getElementById('score');
+        const bestEl = document.getElementById('best');
+        const overlay = document.getElementById('gameOverOverlay');
+        const overlayTitle = document.getElementById('overlayTitle');
+        const pauseOverlay = document.getElementById('pauseOverlay');
+        const resultCardContainer = document.getElementById('resultCardContainer');
+        const toast = document.getElementById('toast');
+
+        function showToast(msg) {
+            toast.textContent = msg || 'Ссылка скопирована!';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Аудио и вибро движок
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(t) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+            const o = audioCtx.createOscillator(), gGain = audioCtx.createGain();
+            o.connect(gGain); gGain.connect(audioCtx.destination); gGain.gain.value = 0.15;
+            switch(t) {
+                case 'move': o.frequency.value = 200; gGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1); break;
+                case 'merge': o.frequency.value = 400; gGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15); break;
+                case 'win': o.frequency.value = 600; gGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3); break;
+                case 'undo': o.frequency.value = 150; gGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08); break;
+            }
+            o.start(); o.stop(audioCtx.currentTime + 0.15);
+        }
+
+        function vibrate(d) { if (vibroEnabled && navigator.vibrate) navigator.vibrate(d); }
+        function sfxMove() { playSound('move'); vibrate(8); }
+        function sfxMerge() { playSound('merge'); vibrate(15); }
+        function sfxWin() { playSound('win'); vibrate(30); }
+        function sfxUndo() { playSound('undo'); }
+
+        function toggleSound(v) { soundEnabled = v; localStorage.soundEnabled = v ? '1' : '0'; }
+        function toggleVibro(v) { vibroEnabled = v; localStorage.vibroEnabled = v ? '1' : '0'; }
+        function theme(t) { document.body.className = t; localStorage.theme = t; }
+        function toggleButtons(show) { document.getElementById('keyboardControls').style.display = show ? 'grid' : 'none'; localStorage.showButtons = show ? '1' : '0'; }
+        function changeSize(newSize) { if (newSize === size) return; size = newSize; localStorage.gridSize = size; start(); closeMenu(null, 'mainMenu', true); }
+
+        function mk() { return Array(size).fill().map(() => Array(size).fill(0)); }
+
+        // Универсальная функция генерации стартовой сетки из сида
+        function generateGridFromSeed(seed, sz) {
+            const rng = mulberry32(seed);
+            const grid = Array(sz).fill().map(() => Array(sz).fill(0));
+            for (let i = 0; i < 2; i++) {
+                const empty = [];
+                for (let y = 0; y < sz; y++) for (let x = 0; x < sz; x++) if (!grid[y][x]) empty.push([y,x]);
+                if (!empty.length) break;
+                const [y,x] = empty[Math.floor(rng() * empty.length)];
+                grid[y][x] = rng() < 0.9 ? 2 : 4;
+            }
+            return grid;
+        }
+
+        function getDailySeed() {
+            const date = new Date();
+            return (date.getFullYear() * 10000 + (date.getMonth()+1) * 100 + date.getDate()) * 123;
+        }
+
+        function add() {
+            const f = [];
+            for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!g[y][x]) f.push([y,x]);
+            if (!f.length) return;
+            const [y,x] = f[Math.floor(Math.random() * f.length)];
+            const val = Math.random() < .9 ? 2 : 4;
+            g[y][x] = val;
+            newTiles.add(`${y},${x}`);
+            if (scoreV === 0 && val === 4) {
+                let cnt = 0; for (let yy = 0; yy < size; yy++) for (let xx = 0; xx < size; xx++) if (g[yy][xx] === 4) cnt++;
+                if (cnt === 2) unlockAchievement('perfectStart');
             }
         }
-    }
-    // Проверка на поражение (нет свободных мест и ходов)
-    let hasMoves = false;
-    for(let y=0;y<size;y++) {
-        for(let x=0;x<size;x++) {
-            if(!g[y][x]) hasMoves = true;
-            if(x < size - 1 && g[y][x] === g[y][x+1]) hasMoves = true;
-            if(y < size - 1 && g[y][x] === g[y+1][x]) hasMoves = true;
+
+        // Единная оптимизированная функция сдвига рядов (DRY)
+        function slideRow(row, targetSize, tracker, updateScoreGlobal = false) {
+            let r = row.filter(Boolean);
+            for (let i = 0; i < r.length - 1; i++) {
+                if (r[i] === r[i + 1]) {
+                    r[i] *= 2;
+                    if (tracker) {
+                        tracker.added += r[i];
+                        tracker.merges++;
+                    }
+                    if (updateScoreGlobal) scoreV += r[i];
+                    r[i + 1] = 0;
+                }
+            }
+            r = r.filter(Boolean);
+            while (r.length < targetSize) r.push(0);
+            return r;
         }
-    }
-    if(!hasMoves) {
-        overlayTitle.textContent = "Игра окончена! 👻";
-        overlay.style.display = 'flex';
-    }
-}
 
-function render(animate = false){
-    if(!board) return;
-    board.style.gridTemplateColumns=`repeat(${size},minmax(0,1fr))`;
-    board.innerHTML="";
-    for(let y=0;y<size;y++){
-        for(let x=0;x<size;x++){
-            let v=g[y][x], d=document.createElement("div");
-            d.className="cell "+(v?"tile v"+v:"");
-            d.textContent=v||""
-            if(animate && v && prevG[y] && prevG[y][x] !== v && prevG[y][x] !== 0) d.classList.add('merged');
-            board.append(d);
+        // Логика совершения хода
+        function move(d) {
+            if (paused || gameOver) return;
+            
+            historyStack.push({ 
+                grid: structuredClone(g), 
+                score: scoreV, 
+                prevG: prevG ? structuredClone(prevG) : null 
+            });
+            if (historyStack.length > 50) historyStack.shift();
+
+            let tracker = { added: 0, merges: 0 };
+            prevG = structuredClone(g);
+            let oldStr = JSON.stringify(g);
+
+            if (d === 'l') g = g.map(r => slideRow(r, size, tracker, true));
+            if (d === 'r') g = g.map(r => slideRow([...r].reverse(), size, tracker, true).reverse());
+            if (d === 'u' || d === 'd') {
+                for (let x = 0; x < size; x++) {
+                    let c = g.map(r => r[x]); 
+                    if (d === 'd') c.reverse(); 
+                    c = slideRow(c, size, tracker, true); 
+                    if (d === 'd') c.reverse();
+                    for (let y = 0; y < size; y++) g[y][x] = c[y];
+                }
+            }
+
+            if (oldStr !== JSON.stringify(g)) {
+                movesLog.push(d);
+                if (tracker.added > 0) { showScoreAddition(tracker.added); sfxMerge(); }
+                else sfxMove();
+                newTiles.clear();
+                add();
+                updateScore(); 
+                render(true);
+                checkGameState(); 
+                checkAchievements(); 
+                saveGame();
+                if (ghostMode) updateGhostDisplay();
+            } else {
+                historyStack.pop();
+            }
         }
-    }
-    if(score) score.textContent=scoreV; saveBest();
-}
 
-function start(){ 
-    scoreV=0; historyGrid = null; g=mk(); prevG=mk(); add(); add(); 
-    overlay.style.display = 'none';
-    closeMenu(null, 'mainMenu', true); render(); 
-}
-function theme(t){ document.body.className=t; localStorage.theme=t; }
-function toggleButtons(show) { 
-    const ctrl = document.getElementById('keyboardControls');
-    if(ctrl) ctrl.style.display = show ? 'grid' : 'none'; 
-    localStorage.showButtons = show ? '1' : '0'; 
-}
+        function showScoreAddition(amount) {
+            const cont = document.getElementById('scoreAdditionContainer');
+            if (!cont) return; cont.innerHTML = '';
+            const el = document.createElement('div'); el.className = 'score-addition'; el.textContent = `+${amount}`; cont.appendChild(el);
+        }
 
-document.onkeydown=e=>{ const k={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key]; if(k) { e.preventDefault(); move(k); } }
+        function undo() {
+            if (paused || gameOver) return;
+            if (historyStack.length) {
+                const prev = historyStack.pop();
+                g = prev.grid; 
+                scoreV = prev.score; 
+                prevG = prev.prevG;
+                movesLog.pop();
+                newTiles.clear();
+                updateScore(); 
+                render(false); 
+                sfxUndo(); 
+                checkGameState(); 
+                saveGame();
+                achievements.undo5.count = (achievements.undo5.count || 0) + 1;
+                if (achievements.undo5.count >= 5) unlockAchievement('undo5');
+            }
+        }
 
-let sx,sy; 
-if(board) {
-    board.ontouchstart=e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }; 
-    board.ontouchmove=e=>{ e.preventDefault(); };
-    board.ontouchend=e=>{
-        let dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
-        if(Math.abs(dx) > 15 || Math.abs(dy) > 15) move(Math.abs(dx)>Math.abs(dy)?(dx>0?"r":"l"):(dy>0?"d":"u"));
-    };
-}
+        function checkGameState() {
+            let hasTarget = false;
+            for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+                if (g[y][x] >= 2048) hasTarget = true;
+                if (g[y][x] > stats.bestTile) stats.bestTile = g[y][x];
+            }
+            if (hasTarget && !winShown) {
+                winShown = true; overlayTitle.textContent = 'Вы победили! 🎉';
+                overlay.style.display = 'flex'; gameOver = true; sfxWin();
+                stats.wins++; saveStats(); endGame(); return;
+            }
+            let hasMoves = false;
+            for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+                if (!g[y][x]) hasMoves = true;
+                if (x < size - 1 && g[y][x] === g[y][x+1]) hasMoves = true;
+                if (y < size - 1 && g[y][x] === g[y+1][x]) hasMoves = true;
+            }
+            if (!hasMoves && !gameOver) {
+                overlayTitle.textContent = 'Игра окончена! 👻';
+                overlay.style.display = 'flex'; gameOver = true; endGame();
+            }
+        }
 
-theme(localStorage.theme || "dark");
-const showButtons = localStorage.showButtons === '1';
-const btnT = document.getElementById('btnToggle');
-if(btnT) btnT.checked = showButtons; toggleButtons(showButtons);
-loadBest(); start();
-</script>
+        function endGame() {
+            stats.totalTime += Math.floor((Date.now() - stats.startTime) / 1000);
+            stats.totalScore += scoreV; stats.gamesPlayed++;
+            saveStats(); checkAchievements();
+            if (ghostMode) finishGhostChallenge();
+            else saveGhostRun();
+            generateResultCard();
+        }
+
+        function finishGhostChallenge() { ghostMode = null; ghostGrids = []; render(); }
+
+        function saveGhostRun() {
+            if (!currentSeed || movesLog.length === 0) return;
+            const ghost = { seed: currentSeed, size: size, moves: [...movesLog], score: scoreV, maxTile: stats.bestTile, date: Date.now() };
+            const ghosts = LS.get('ghosts', []);
+            ghosts.unshift(ghost);
+            if (ghosts.length > 20) ghosts.pop();
+            LS.set('ghosts', ghosts);
+        }
+
+        // Загрузка и симуляция призрака (Ghost Battle)
+        function loadGhost(ghost) {
+            ghostMode = ghost;
+            size = ghost.size;
+            currentSeed = ghost.seed;
+            g = generateGridFromSeed(ghost.seed, size);
+            ghostGrids = [];
+            
+            let simGrid = structuredClone(g);
+            ghostGrids.push({ grid: structuredClone(simGrid), score: 0 });
+            
+            for (let d of ghost.moves) {
+                if (d === 'l') simGrid = simGrid.map(r => slideRow([...r], size, null, false));
+                else if (d === 'r') simGrid = simGrid.map(r => slideRow([...r].reverse(), size, null, false).reverse());
+                else if (d === 'u' || d === 'd') {
+                    for (let x = 0; x < size; x++) {
+                        let col = simGrid.map(r => r[x]);
+                        if (d === 'd') col.reverse();
+                        col = slideRow(col, size, null, false);
+                        if (d === 'd') col.reverse();
+                        for (let y = 0; y < size; y++) simGrid[y][x] = col[y];
+                    }
+                }
+                ghostGrids.push({ grid: structuredClone(simGrid), score: 0 });
+            }
+            scoreV = 0; movesLog = []; winShown = false; gameOver = false; paused = false;
+            overlay.style.display = 'none'; pauseOverlay.style.display = 'none';
+            historyStack = []; prevG = null; newTiles.clear();
+            updateScore(); render(); updateGhostDisplay();
+        }
+
+        function updateGhostDisplay() {
+            if (!ghostMode || !ghostGrids) return;
+            const step = Math.min(movesLog.length, ghostGrids.length - 1);
+            const ghostState = ghostGrids[step];
+            cellElements.forEach(cell => cell.classList.remove('ghost'));
+            if (!ghostState) return;
+            const gg = ghostState.grid;
+            for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+                if (gg[y][x] && !g[y][x]) {
+                    const idx = y * size + x;
+                    if (cellElements[idx]) cellElements[idx].classList.add('ghost');
+                }
+            }
+        }
+
+        function start(seed = null) {
+            size = parseInt(localStorage.gridSize) || 4;
+            scoreV = 0; gameOver = false; winShown = false; paused = false;
+            pauseOverlay.style.display = 'none'; overlay.style.display = 'none';
+            historyStack = []; movesLog = [];
+            currentSeed = seed || Math.floor(Math.random() * 2147483647);
+            g = generateGridFromSeed(currentSeed, size);
+            prevG = null; 
+            cellElements = [];
+            newTiles.clear();
+            updateScore();
+            requestAnimationFrame(() => {
+                render();
+                stats.startTime = Date.now();
+                achievements.undo5.count = 0;
+                achievements.mergeMaster.mergeCount = 0;
+                ghostMode = null; ghostGrids = [];
+                saveGame();
+            });
+        }
+
+        function render(animate = false) {
+            if (!boardEl) return;
+            boardEl.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
+            const cellSize = 100 / size;
+            const gap = 10; const padding = 12;
+
+            if (!cellElements.length || cellElements.length !== size * size) {
+                boardEl.innerHTML = ''; cellElements = [];
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        const div = document.createElement('div');
+                        div.className = 'cell';
+                        div.style.width = `calc(${cellSize}% - ${gap}px)`; div.style.height = `calc(${cellSize}% - ${gap}px)`;
+                        div.style.top = `calc(${y * cellSize}% + ${padding}px)`; div.style.left = `calc(${x * cellSize}% + ${padding}px)`;
+                        boardEl.appendChild(div); cellElements.push(div);
+                    }
+                }
+            }
+
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    const idx = y * size + x; const cell = cellElements[idx]; const v = g[y][x]; const key = `${y},${x}`;
+                    cell.style.top = `calc(${y * cellSize}% + ${padding}px)`; cell.style.left = `calc(${x * cellSize}% + ${padding}px)`;
+                    cell.className = 'cell';
+                    if (v) { cell.classList.add('tile', 'v' + v); cell.textContent = v; } 
+                    else { cell.textContent = ''; }
+                    if (newTiles.has(key)) cell.classList.add('new-tile');
+                }
+            }
+            updateGhostDisplay();
+        }
+
+        function updateScore() {
+            if (scoreEl) scoreEl.textContent = scoreV;
+            if (scoreV > bestV) { bestV = scoreV; if (bestEl) bestEl.textContent = bestV; LS.set('best_score_v2', bestV); }
+        }
+
+        function saveGame() {
+            if (gameOver) { localStorage.removeItem('savedGame'); return; }
+            LS.set('savedGame', {
+                size, grid: g, score: scoreV, historyStack: historyStack.slice(-20), movesLog,
+                stats, achievements: Object.keys(achievements).reduce((a,k)=>{a[k]=achievements[k].earned; return a;},{}),
+                winShown, theme: document.body.className, currentSeed, 
+                ghostMode: ghostMode ? { seed: ghostMode.seed, score: ghostMode.score, moves: ghostMode.moves, maxTile: ghostMode.maxTile } : null
+            });
+        }
+
+        function loadGame() {
+            const saved = LS.get('savedGame');
+            if (!saved) return false;
+            size = saved.size || 4; g = saved.grid; scoreV = saved.score || 0;
+            historyStack = saved.historyStack || []; movesLog = saved.movesLog || [];
+            stats = saved.stats || stats; winShown = saved.winShown || false;
+            theme(saved.theme || 'dark'); currentSeed = saved.currentSeed;
+            ghostMode = saved.ghostMode || null;
+            cellElements = [];
+            updateScore();
+            requestAnimationFrame(() => { render(); checkGameState(); });
+            return true;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const activeTabBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+            if (activeTabBtn) activeTabBtn.classList.add('active');
+            const activeTabCont = document.getElementById(`tab-${tabName}`);
+            if (activeTabCont) activeTabCont.classList.add('active');
+            if (tabName === 'stats') { renderStats(); renderAchievements(); }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tab-btn')) {
+                const tab = e.target.dataset.tab;
+                if (tab) switchTab(tab);
+            }
+        });
+
+        // === ИНТЕРФЕЙСНЫЕ ФУНКЦИИ РЕЖИМА ПРИЗРАКА ===
+
+        function showDailyChallenge() {
+            const seed = getDailySeed();
+            start(seed);
+            showToast("Режим 'Daily Challenge' запущен!");
+        }
+
+        function openGhostList() {
+            const ghosts = LS.get('ghosts', []);
+            const cont = document.getElementById('ghostListContainer');
+            if (!cont) return;
+            cont.innerHTML = '';
+            
+            if (ghosts.length === 0) {
+                cont.innerHTML = '<div style="text-align:center;opacity:0.5;padding:10px;">Нет записанных призраков</div>';
+                return;
+            }
+
+            ghosts.forEach((gh, idx) => {
+                const div = document.createElement('div');
+                div.className = 'ghost-item';
+                div.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid var(--border); font-size:14px;';
+                
+                const date = new Date(gh.date).toLocaleDateString();
+                div.innerHTML = `
+                    <div>
+                        <div><b>${gh.size}x${gh.size}</b> | Счет: ${gh.score}</div>
+                        <div style="font-size:11px; opacity:0.6;">${date} | Ходов: ${gh.moves.length}</div>
+                    </div>
+                    <button class="menu-btn" style="padding:4px 10px; font-size:12px; margin:0; width:auto;" onclick="loadGhostFromList(${idx})">Баттл</button>
+                `;
+                cont.appendChild(div);
+            });
+        }
+
+        function loadGhostFromList(index) {
+            const ghosts = LS.get('ghosts', []);
+            if (ghosts[index]) {
+                loadGhost(ghosts[index]);
+                closeMenu(null, 'ghostMenu', true);
+                showToast("Баттл с призраком начался!");
+            }
+        }
+
+        function challengeFriend() {
+            if (movesLog.length === 0) {
+                showToast("Сделайте хотя бы один ход, чтобы бросить вызов!");
+                return;
+            }
+            const data = { seed: currentSeed, size: size, moves: [...movesLog], score: scoreV };
+            try {
+                const json = JSON.stringify(data);
+                const b64 = btoa(unescape(encodeURIComponent(json)));
+                const url = `${window.location.origin}${window.location.pathname}?challenge=${b64}`;
+                
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(url).then(() => showToast("Ссылка скопирована! Отправь её другу."));
+                } else {
+                    const input = document.createElement('input');
+                    input.value = url; document.body.appendChild(input);
+                    input.select(); document.execCommand('copy');
+                    document.body.removeChild(input);
+                    showToast("Ссылка скопирована!");
+                }
+            } catch(e) {
+                showToast("Ошибка генерации вызова.");
+            }
+        }
+
+        function checkUrlGhost() {
+            const params = new URLSearchParams(window.location.search);
+            const challenge = params.get('challenge');
+            if (challenge) {
+                try {
+                    const json = decodeURIComponent(escape(atob(challenge)));
+                    const ghost = JSON.parse(json);
+                    if (ghost && ghost.seed && ghost.moves) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        setTimeout(() => {
+                            loadGhost(ghost);
+                            showToast(`Вызов принят! Призрак набрал: ${ghost.score}`);
+                        }, 500);
+                    }
+                } catch(e) {
+                    console.error("Ошибка разбора вызова из URL", e);
+                }
+            }
+        }
+
+        function generateResultCard() {
+            const cont = document.getElementById('resultCardContainer');
+            if (!cont) return;
+            cont.innerHTML = `
+                <div style="background:var(--bg-card); border:2px solid var(--primary); padding:15px; border-radius:10px; margin-top:15px; text-align:left;">
+                    <h4 style="margin:0 0 10px 0; color:var(--primary); text-align:center;">📊 Итоги матча</h4>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:13px;">
+                        <div>Размер поля: <b>${size}x${size}</b></div>
+                        <div>Ваш счет: <b>${scoreV}</b></div>
+                        <div>Лучшая плитка: <b>${stats.bestTile}</b></div>
+                        <div>Сделано ходов: <b>${movesLog.length}</b></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function shareResult() {
+            const text = `Я набрал ${scoreV} очков в 2048 Ghost Battle на поле ${size}x${size}! СМОЖЕШЬ СЕСТЬ МНЕ НА ХВОСТ?`;
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+                window.Telegram.WebApp.openLink(`https://t.getshare.com/` + encodeURIComponent(text));
+            } else if (navigator.share) {
+                navigator.share({ title: '2048 Ghost Battle', text: text, url: window.location.href }).catch(()=>{});
+            } else {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(() => showToast("Результат скопирован!"));
+                }
+            }
+        }
+
+        function renderAchievements() {
+            const cont = document.getElementById('achievementsContainer');
+            if (!cont) return;
+            cont.innerHTML = '';
+            
+            const savedGame = LS.get('savedGame');
+            const earnedMap = savedGame ? (savedGame.achievements || {}) : {};
+
+            Object.keys(achievements).forEach(key => {
+                const ach = achievements[key];
+                if (earnedMap[key]) ach.earned = true;
+
+                const div = document.createElement('div');
+                div.className = `ach-item ${ach.earned ? 'unlocked' : 'locked'}`;
+                div.style.cssText = `display:flex; align-items:center; gap:10px; padding:8px; border-radius:6px; margin-bottom:6px; background:${ach.earned ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.02)'}; border:1px solid ${ach.earned ? 'var(--primary)' : 'var(--border)'}; opacity:${ach.earned ? '1' : '0.5'}`;
+                
+                div.innerHTML = `
+                    <div style="font-size:24px;">${ach.icon}</div>
+                    <div>
+                        <div style="font-weight:bold; font-size:13px;">${ach.name}</div>
+                        <div style="font-size:11px; opacity:0.7;">${ach.desc}</div>
+                    </div>
+                `;
+                cont.appendChild(div);
+            });
+        }
+
+        function unlockAchievement(id) {
+            if (achievements[id] && !achievements[id].earned) {
+                achievements[id].earned = true;
+                showToast(`🏆 Достижение: ${achievements[id].name}`);
+                saveGame();
+            }
+        }
+
+        // Автоматическая проверка наград
+        function checkAchievements() {
+            if (scoreV >= 1000) unlockAchievement('score1000');
+            if (scoreV >= 10000) unlockAchievement('score10000');
+            
+            let has256 = false, has1024 = false, has2048 = false, has4096 = false;
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    if (g[y][x] >= 256) has256 = true;
+                    if (g[y][x] >= 1024) has1024 = true;
+                    if (g[y][x] >= 2048) has2048 = true;
+                    if (g[y][x] >= 4096) has4096 = true;
+                }
+            }
+            if (has256) unlockAchievement('tile256');
+            if (has1024) unlockAchievement('tile1024');
+            if (has2048) unlockAchievement('tile2048');
+            if (has4096) unlockAchievement('tile4096');
+
+            if (stats.gamesPlayed >= 10) unlockAchievement('games10');
+            if (scoreV >= 500 && (Date.now() - stats.startTime) <= 30000) unlockAchievement('speedRun');
+        }
+
+        function togglePause() {
+            paused = !paused;
+            pauseOverlay.style.display = paused ? 'flex' : 'none';
+        }
+
+        function openMenu(id) {
+            const m = document.getElementById(id); if (!m) return;
+            if (id === 'mainMenu') switchTab('game');
+            if (id === 'ghostMenu') openGhostList();
+            m.style.display = 'flex'; setTimeout(() => m.classList.add('open'), 10);
+        }
+
+        function closeMenu(e, id, force = false) {
+            const m = document.getElementById(id);
+            if (m && (force || e.target === m)) { m.classList.remove('open'); setTimeout(() => m.style.display = 'none', 250); }
+        }
+
+        function loadStats() { stats = LS.get('stats2048', stats); }
+        function saveStats() { LS.set('stats2048', stats); }
+        function renderStats() {
+            const c = document.getElementById('statsContainer'); if (!c) return;
+            const h = Math.floor(stats.totalTime / 3600), m = Math.floor((stats.totalTime % 3600) / 60);
+            const league = bestV >= 50000 ? 'Elite' : bestV >= 20000 ? 'Gold' : bestV >= 10000 ? 'Silver' : 'Bronze';
+            c.innerHTML = `<div>🎮 Игр: <b>${stats.gamesPlayed}</b></div><div>🏆 Побед: <b>${stats.wins}</b></div><div>⭐ Плитка: <b>${stats.bestTile}</b></div><div>🕒 Время: <b>${h}ч ${m}м</b></div><div>🏅 Лига: <b>${league}</b></div>`;
+        }
+
+        // Слушатели клавиатуры и свайпов
+        document.addEventListener('keydown', e => {
+            if (['ArrowUp', 'KeyW'].includes(e.code)) move('u');
+            if (['ArrowDown', 'KeyS'].includes(e.code)) move('d');
+            if (['ArrowLeft', 'KeyA'].includes(e.code)) move('l');
+            if (['ArrowRight', 'KeyD'].includes(e.code)) move('r');
+        });
+
+        let tsX, tsY;
+        document.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; tsY = e.touches[0].clientY; }, {passive: true});
+        document.addEventListener('touchend', e => {
+            if (!tsX || !tsY) return;
+            let tdX = e.changedTouches[0].clientX - tsX, tdY = e.changedTouches[0].clientY - tsY;
+            if (Math.max(Math.abs(tdX), Math.abs(tdY)) > 40) {
+                if (Math.abs(tdX) > Math.abs(tdY)) move(tdX > 0 ? 'r' : 'l');
+                else move(tdY > 0 ? 'd' : 'u');
+            }
+            tsX = null; tsY = null;
+        }, {passive: true});
+
+        function init() {
+            loadStats();
+            if (!loadGame()) start();
+            if (localStorage.showButtons === '1') toggleButtons(true);
+            checkUrlGhost();
+        }
+        init();
+    </script>
 </body>
 </html>
