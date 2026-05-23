@@ -8,3 +8,12 @@
 .v2 { background: #eee4da; }
 .v4 { background: #ede0c8; }
 /* ... добавь v8, v16 и т.д. по аналогии */
+body {
+    /* Запрещает браузеру "тянуть" страницу при свайпах */
+    overscroll-behavior: none; 
+    /* Убирает реакцию на касания */
+    touch-action: none;
+    /* Запрещает выделение текста (чтобы не глючило при игре) */
+    user-select: none;
+    -webkit-user-select: none;
+}
