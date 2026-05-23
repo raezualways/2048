@@ -66,3 +66,9 @@ document.addEventListener('touchmove', function(e) {
     // { passive: false } - критически важно!
     e.preventDefault();
 }, { passive: false });
+// Если используешь Telegram WebApp SDK
+if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand(); // Разворачиваем на весь экран
+}
