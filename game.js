@@ -5,9 +5,12 @@ tg.expand();
     // Попробуй этот метод: он отключает скролл, но не "убивает" касания
     if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
 }
+// Попробуй добавить задержку, если срабатывает нестабильно
 setTimeout(() => {
     if (tg.disableVerticalSwipes) {
-        tg.disableVerticalSwipes(); 
+        tg.disableVerticalSwipes();
+    }
+}, 100); // 100мс хватит, чтобы Telegram "осознал" состояние окна
         
 const container = document.getElementById('tileContainer');
 let tsX = null;
