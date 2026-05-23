@@ -9,14 +9,33 @@
 .v4 { background: #ede0c8; }
 /* ... добавь v8, v16 и т.д. по аналогии */
 html, body {
-    /* Запрещает "отскок" при скролле */
-    overscroll-behavior-y: none; 
-    /* Запрещает браузеру обрабатывать жесты (кроме тех, что мы пропишем в JS) */
-    touch-action: none; 
-    /* Запрещает выделение текста */
-    user-select: none;
-    -webkit-user-select: none;
-    /* Фиксирует высоту, чтобы страница не "гуляла" */
+    margin: 0;
+    padding: 0;
+    width: 100vw;
     height: 100vh;
-    overflow: hidden;
+    overflow: hidden; /* Блокируем скролл */
+    overscroll-behavior: none; /* ОТКЛЮЧАЕМ "отскок" и обновление */
+    touch-action: none; /* ЗАПРЕЩАЕМ браузеру любые жесты */
+    position: fixed; /* Фиксируем страницу */
+    background: #faf8ef;
+    /* Учитываем вырез на iPhone, чтобы не было наезда на статус-бар */
+    padding-top: env(safe-area-inset-top); 
+}
+
+#game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    /* Убираем лишние марджины, которые могли давать скролл */
+    margin: 0; 
+}
+
+#tileContainer {
+    position: relative;
+    /* ... твои размеры ... */
+    user-select: none; /* Запрещаем выделение текста */
+    -webkit-user-select: none;
+    touch-action: none; /* Важно для свайпов! */
 }
