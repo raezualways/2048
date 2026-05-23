@@ -61,3 +61,8 @@ window.addEventListener('touchend', e => {
     }
     tsX = null;
 }, { passive: false });
+document.addEventListener('touchmove', function(e) {
+    // Если свайп происходит, мы его отменяем
+    // { passive: false } - критически важно!
+    e.preventDefault();
+}, { passive: false });
