@@ -5,7 +5,10 @@ tg.expand();
     // Попробуй этот метод: он отключает скролл, но не "убивает" касания
     if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
 }
-
+setTimeout(() => {
+    if (tg.disableVerticalSwipes) {
+        tg.disableVerticalSwipes(); 
+        
 const container = document.getElementById('tileContainer');
 let tsX = null;
 let tsY = null;
