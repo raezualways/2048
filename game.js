@@ -1,8 +1,7 @@
 // Инициализация Telegram WebApp
-const tg = window.Telegram?.WebApp;
-if (tg) {
-    tg.ready();
-    tg.expand();
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
     // Попробуй этот метод: он отключает скролл, но не "убивает" касания
     if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
 }
