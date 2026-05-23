@@ -1,0 +1,10 @@
+#tileContainer { position: relative; width: 340px; height: 340px; background: #bbada0; border-radius: 6px; }
+.tile { 
+    position: absolute; width: 75px; height: 75px; 
+    border-radius: 3px; font-weight: bold; font-size: 25px;
+    display: flex; justify-content: center; align-items: center;
+    transition: transform 0.15s ease-in-out;
+}
+.v2 { background: #eee4da; }
+.v4 { background: #ede0c8; }
+/* ... добавь v8, v16 и т.д. по аналогии */
