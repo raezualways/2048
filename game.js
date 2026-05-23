@@ -38,3 +38,26 @@ function init() {
 }
 
 window.addEventListener('load', init);
+// Добавь опцию passive: false, чтобы можно было отменить жест
+window.addEventListener('touchmove', function(e) {
+    // Если свайп происходит внутри игрового поля
+    if (e.target.closest('#tileContainer')) {
+        e.preventDefault(); // Отменяем системное сворачивание
+    }
+}, { passive: false });
+
+// И в твоем существующем touchend добавь preventDefault тоже
+window.addEventListener('touchend', e => {
+    if (!tsX) return;
+    
+    // Предотвращаем стандартное поведение
+    e.preventDefault(); 
+    
+    let dx = e.changedTouches[0].clientX - tsX;
+    let dy = e.changedTouches[0].clientY - tsY;
+    
+    if (Math.max(Math.abs(dx), Math.abs(dy)) > 40) {
+        move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'));
+    }
+    tsX = null;
+}, { passive: false });
