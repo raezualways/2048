@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
+
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/192.png">
     <title>2048 Duel Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIjIwNDggRHVlbCIsCiAgInNob3J0X25hbWUiOiAiMjA0OCBEbCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIsCiAgImljb25zIjogW3sKICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA2NCA2NCc+JTNDcmVjdCB3aWR0aD0nNjQnIGhlaWdodD0nNjQnIHJ4PScxMicgZmlsbD0nIzBmMTcyYScvPiUzQ3RleHQgeD0nMzInIHk9JzM2JyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBkeT0nLjRlbScgZmlsbD0nd2hpdGUnIGZvbnQtc2l6ZT0nMjQnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nYm9sZCc+MjA0ODwvdGV4dD4lM0Mvc3ZnPiIsCiAgICAic2l6ZXMiOiAiNjR4NjQiLAogICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICB9XQp9">
 </head>
 <body class="dark">
 <div class="app">
@@ -45,6 +42,7 @@
     <div id="toast" class="toast">Ссылка скопирована!</div>
 </div>
 
+<!-- Основное меню настроек -->
 <div id="mainMenu" class="menu" onclick="closeMenu(event, 'mainMenu')">
     <div class="sheet">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -102,16 +100,10 @@
                 </div>
             </div>
         </div>
-
-        <div class="tab-nav">
-            <button class="tab-btn active" data-tab="game">🎮 Игра</button>
-            <button class="tab-btn" data-tab="ghost">⚔️ Дуэли</button>
-            <button class="tab-btn" data-tab="themes">🎨 Темы</button>
-            <button class="tab-btn" data-tab="stats">📊 Статы</button>
-        </div>
     </div>
 </div>
 
+<!-- Leaderboard -->
 <div id="leaderMenu" class="menu" onclick="closeMenu(event, 'leaderMenu')">
     <div class="sheet">
         <div style="display:flex; justify-content:space-between;"><h2>Топ игроков</h2><button class="close-btn" onclick="closeMenu(null,'leaderMenu',true)">✕</button></div>
@@ -119,6 +111,7 @@
     </div>
 </div>
 
+<!-- Daily Challenge -->
 <div id="dailyChallengeMenu" class="menu" onclick="closeMenu(event, 'dailyChallengeMenu')">
     <div class="sheet">
         <div style="display:flex; justify-content:space-between;"><h2>Ежедневный хардкор-вызов</h2><button class="close-btn" onclick="closeMenu(null,'dailyChallengeMenu',true)">✕</button></div>
@@ -128,6 +121,13 @@
     </div>
 </div>
 
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <button class="nav-btn active" data-tab="game" onclick="switchTab('game')"><span class="nav-icon">🎮</span><span class="nav-text">Игра</span></button>
+    <button class="nav-btn" data-tab="ghost" onclick="switchTab('ghost')"><span class="nav-icon">⚔️</span><span class="nav-text">Дуэли</span></button>
+    <button class="nav-btn" data-tab="themes" onclick="switchTab('themes')"><span class="nav-icon">🎨</span><span class="nav-text">Темы</span></button>
+    <button class="nav-btn" data-tab="stats" onclick="switchTab('stats')"><span class="nav-icon">📊</span><span class="nav-text">Статы</span></button>
+</div>
 
 </body>
 <script src="game.js"></script>
