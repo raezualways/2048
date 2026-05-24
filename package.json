@@ -1,0 +1,33 @@
+{
+  "name": "2048",
+  "version": "1.0.0",
+  "description": "Telegram bot for launching the 2048 game as a Web App",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "nodemon bot.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.66.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "webapp",
+    "game",
+    "2048"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://raezualways.github.io/2048/"
+  },
+  "bugs": {
+    "url": "https://raezualways.github.io/2048/issues"
+  }
+}
