@@ -741,11 +741,20 @@ function saveStats() { LS.set('stats2048', stats); }
 function renderStats() {
     const c = document.getElementById('statsContainer');
     if (!c) return;
+
+    // Ensure stats object exists and has default values
+    stats = stats || { gamesPlayed: 0, wins: 0, totalScore: 0, bestTile: 0 };
+    stats.gamesPlayed = stats.gamesPlayed || 0;
+    stats.wins = stats.wins || 0;
+    stats.totalScore = stats.totalScore || 0;
+    stats.bestTile = stats.bestTile || 0;
+
     c.innerHTML = `
         <div style="width:100%; display:flex; flex-direction:column; gap:4px; padding:10px; box-sizing:border-box; color:var(--text);">
             <div>🎮 Сыграно игр: <b>${stats.gamesPlayed}</b></div>
             <div>🏆 Всего побед: <b>${stats.wins}</b></div>
             <div>⭐ Лучшая плитка: <b>${stats.bestTile}</b></div>
+            <div>💰 Всего очков: <b>${stats.totalScore}</b></div>
             <div>🕒 Время текущей игры: <b>${formatTime(gameTime)}</b></div>
         </div>`;
 }
