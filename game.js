@@ -938,10 +938,22 @@ function loadGame() {
 
     if (shareSeed && shareScore) {
         currentSeed = parseInt(shareSeed);
-        rivalScore = parseInt(shareScore);
+        const challengeScore = parseInt(shareScore);
         size = parseInt(shareSize) || 4;
         localStorage.gridSize = size;
-        showToast('⚔️ Вызов принят! Побейте счет друга.');
+
+        // If the challenge score is higher than current best, update best score
+        if (challengeScore > bestV) {
+            bestV = challengeScore;
+            localStorage.bestScore = bestV;
+            LS.set('bestScore', bestV);
+            LS.saveProgressToCloud();
+            showToast('🏆 Новый рекорд из вызова! Ваш лучший счет обновлен.');
+        } else {
+            showToast('⚔️ Вызов принят! Побейте счет друга.');
+        }
+
+        rivalScore = challengeScore;
         start();
         // FIX: Ensure target display is updated immediately after rivalScore is set
         setTimeout(() => updateTargetDisplay(), 100);
