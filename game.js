@@ -27,6 +27,7 @@ let timerIntervalId = null;
 let currentRng = null;
 let gameTime = 0;
 let gameStarted = false; // FIX 2: Флаг для корректного учета сыгранных игр
+let recordBrokenThisRun = false; // FIX: Флаг для отслеживания нового рекорда в текущей сессии
 
 let comboMultiplier = 1;
 let nextTileValue = 2;
@@ -59,7 +60,24 @@ const achievements = {
     hoarder: { name:'Перфекционист', desc:'Открыть новое меню достижений', icon:'🏅', earned:false }
 };
 
-const botNames = ["CyberGamer", "Alex_2048", "Matrix_Neo", "QuantumTile", "Satoshi2048", "LuckySwipe", "AlphaBlock", "DeepMind_bot", "PixelKing", "CryptoGhost"];
+const botNames = [
+    { name: "Ваня228", score: null },
+    { name: "Алексей", score: null },
+    { name: "Матрица", score: null },
+    { name: "Квант", score: null },
+    { name: "Лёха", score: null },
+    { name: "Везунчик", score: null },
+    { name: "Альфа", score: null },
+    { name: "ГлубокийУм", score: null },
+    { name: "Пиксель", score: null },
+    { name: "Призрак", score: null }
+];
+
+const fixedLeaders = [
+    { name: "MioMuura", score: 13012 },
+    { name: "Ulvi", score: 5620 },
+    { name: "raezu", score: 10034 }
+];
 
 (function injectStyles() {
     const id = 'game-achievements-styles';
@@ -86,20 +104,20 @@ const botNames = ["CyberGamer", "Alex_2048", "Matrix_Neo", "QuantumTile", "Satos
 
         .ach-menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
-            gap: 6px;
-            max-height: 260px;
+            grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+            gap: 8px;
+            max-height: 320px;
             overflow-y: auto;
             padding-right: 4px;
-            margin-top: 10px;
+            margin-top: 12px;
             touch-action: pan-y !important;
             -webkit-overflow-scrolling: touch;
         }
         .ach-item-card {
             background: var(--empty, rgba(255, 255, 255, 0.05));
             border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-            border-radius: 10px;
-            padding: 8px 2px;
+            border-radius: 12px;
+            padding: 10px 4px;
             text-align: center;
             transition: all 0.25s ease;
             opacity: 0.25;
@@ -112,9 +130,9 @@ const botNames = ["CyberGamer", "Alex_2048", "Matrix_Neo", "QuantumTile", "Satos
             border-color: #38bdf8;
             background: linear-gradient(145deg, var(--empty, rgba(255, 255, 255, 0.02)), rgba(56, 189, 248, 0.06));
         }
-        .ach-card-icon { font-size: 18px; margin-bottom: 2px; }
-        .ach-card-name { font-size: 10px; font-weight: 800; margin-bottom: 2px; color: var(--text, #fff); line-height: 1.1; }
-        .ach-card-desc { font-size: 8px; opacity: 0.5; color: var(--text, #fff); line-height: 1; }
+        .ach-card-icon { font-size: 20px; margin-bottom: 3px; }
+        .ach-card-name { font-size: 11px; font-weight: 800; margin-bottom: 3px; color: var(--text, #fff); line-height: 1.2; }
+        .ach-card-desc { font-size: 9px; opacity: 0.6; color: var(--text, #fff); line-height: 1.1; }
 
         .ach-progress-bar {
             background: var(--border, rgba(255, 255, 255, 0.1));
@@ -160,8 +178,85 @@ const botNames = ["CyberGamer", "Alex_2048", "Matrix_Neo", "QuantumTile", "Satos
 })();
 
 const LS = {
-    get(key, def) { try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch(e) { return def; } },
-    set(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+    get(key, def) {
+        try {
+            // Try Telegram WebApp storage first if available
+            if (window.Telegram?.WebApp?.CloudStorage) {
+                try {
+                    const value = window.Telegram.WebApp.CloudStorage.getItem(key);
+                    return value ? JSON.parse(value) : def;
+                } catch (e) {
+                    console.log('Telegram storage read failed, falling back to localStorage');
+                }
+            }
+            // Fall back to localStorage
+            return JSON.parse(localStorage.getItem(key)) ?? def;
+        } catch(e) {
+            return def;
+        }
+    },
+    set(key, val) {
+        // Save to both Telegram and localStorage for synchronization
+        try {
+            // For best score, save to Telegram storage if available
+            if (key === 'bestScore' && window.Telegram?.WebApp?.CloudStorage) {
+                try {
+                    window.Telegram.WebApp.CloudStorage.setItem(key, JSON.stringify(val));
+                } catch (e) {
+                    console.log('Telegram storage write failed, falling back to localStorage');
+                    localStorage.setItem(key, JSON.stringify(val));
+                }
+            }
+            // For other data, use localStorage only
+            localStorage.setItem(key, JSON.stringify(val));
+        } catch(e) {
+            console.error('Storage save failed:', e);
+        }
+    },
+    saveProgressToCloud() {
+        try {
+            if (window.Telegram?.WebApp?.CloudStorage) {
+                const progressData = {
+                    bestV: bestV,
+                    stats: stats,
+                    achievements: achievements
+                };
+                window.Telegram.WebApp.CloudStorage.setItem('user_progress', JSON.stringify(progressData));
+                console.log('Progress saved to Telegram Cloud Storage');
+                return true;
+            }
+        } catch (e) {
+            console.error('Failed to save progress to Telegram Cloud Storage:', e);
+            return false;
+        }
+        return false;
+    },
+    loadProgressFromCloud() {
+        try {
+            if (window.Telegram?.WebApp?.CloudStorage) {
+                const savedData = window.Telegram.WebApp.CloudStorage.getItem('user_progress');
+                if (savedData) {
+                    const progressData = JSON.parse(savedData);
+                    bestV = progressData.bestV || bestV;
+                    stats = progressData.stats || stats;
+                    // Restore achievements
+                    if (progressData.achievements) {
+                        for (const id in progressData.achievements) {
+                            if (achievements[id]) {
+                                achievements[id].earned = progressData.achievements[id].earned;
+                            }
+                        }
+                    }
+                    console.log('Progress loaded from Telegram Cloud Storage');
+                    return true;
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load progress from Telegram Cloud Storage:', e);
+            return false;
+        }
+        return false;
+    }
 };
 
 function mulberry32(a) {
@@ -322,6 +417,22 @@ function slideRow(row, tracker) {
             // FIX: Use a new ID for merged tiles to prevent conflicts
             result.push({ id: idCounter++, value: mergedValue, merged: true, isNew: false });
             i++;
+
+            // Haptic feedback for tile merge
+            if (window.Telegram?.WebApp?.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+
+            // Trigger animation for high-value tiles (1024+)
+            if (mergedValue >= 1024) {
+                const boardEl = document.getElementById('board');
+                if (boardEl) {
+                    boardEl.classList.add('shake-animation');
+                    setTimeout(() => {
+                        boardEl.classList.remove('shake-animation');
+                    }, 300);
+                }
+            }
         } else if (items[i]) {
             result.push({ id: items[i].id, value: items[i].value, merged: false, isNew: false });
         }
@@ -381,6 +492,24 @@ function move(d) {
             comboMultiplier++;
             if (window.Telegram?.WebApp?.HapticFeedback) {
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+            }
+
+            // Trigger combo animation
+            const widgetsContainer = document.getElementById('gameWidgetsContainer');
+            if (widgetsContainer) {
+                widgetsContainer.classList.add('shake-animation');
+                setTimeout(() => {
+                    widgetsContainer.classList.remove('shake-animation');
+                }, 300);
+            }
+
+            // Trigger score box animation
+            const scoreBox = document.querySelector('.score-box');
+            if (scoreBox) {
+                scoreBox.classList.add('shake-animation');
+                setTimeout(() => {
+                    scoreBox.classList.remove('shake-animation');
+                }, 300);
             }
         } else {
             comboMultiplier = 1;
@@ -479,6 +608,11 @@ function checkGameState() {
         gameOver = true;
         triggerGameOverVisuals();
         endGame();
+
+        // Haptic feedback for game over
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+        }
     }
 }
 
@@ -504,6 +638,17 @@ function endGame() {
     }
     cardHtml += `</div>`;
     resultCardContainer.innerHTML = cardHtml;
+
+    // Add share button to the game over overlay
+    setTimeout(() => {
+        const shareButton = document.createElement('button');
+        shareButton.className = 'btn opt-share';
+        shareButton.style.marginTop = '12px';
+        shareButton.style.padding = '12px 24px';
+        shareButton.innerHTML = '🚀 Поделиться рекордом';
+        shareButton.onclick = shareToStory;
+        resultCardContainer.appendChild(shareButton);
+    }, 100);
 }
 
 function checkAchievements() {
@@ -532,6 +677,14 @@ function earnAchievement(id) {
     achievements[id].earned = true;
     LS.set('achievements2048', achievements);
     showToast(`🏅 Достижение: ${achievements[id].name}`);
+
+    // Haptic feedback for achievement
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+    }
+
+    // Save progress to cloud storage
+    LS.saveProgressToCloud();
 }
 
 function loadStats() {
@@ -590,6 +743,11 @@ function updateScore() {
             bestEl.classList.remove('new-record-animation');
         }, 900);
         showNewRecordPopup();
+
+        // Haptic feedback for new record
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
     }
     updateTargetDisplay();
 }
@@ -659,6 +817,7 @@ function start() {
 
     gameOver = false; winShown = false; scoreV = 0; totalMovesCount = 0; movesLog = [];
     gameTime = 0; comboMultiplier = 1; gameStarted = false; // Сброс состояния новой сессии
+    recordBrokenThisRun = false; // FIX: Сброс флага нового рекорда при старте новой игры
     overlay.style.display = 'none';
     overlay.classList.remove('open');
     historyStack = [];
@@ -678,6 +837,7 @@ function start() {
 
     // Гарантируем, что вкладка ачивок не пропадет из DOM при жесткой перезагрузке сессии
     initAchievementsUI();
+    renderAchievementsTab(); // FIX: Обновляем отображение ачивок при старте новой игры
 }
 
 function saveGame() {
@@ -720,7 +880,6 @@ function initAchievementsUI() {
 }
 
 function renderAchievementsTab() {
-    earnAchievement('hoarder');
     const grid = document.getElementById('achievementsGridContainer');
     if (!grid) return;
 
@@ -784,6 +943,8 @@ function loadGame() {
         localStorage.gridSize = size;
         showToast('⚔️ Вызов принят! Побейте счет друга.');
         start();
+        // FIX: Ensure target display is updated immediately after rivalScore is set
+        setTimeout(() => updateTargetDisplay(), 100);
         return;
     }
 
@@ -915,16 +1076,30 @@ function openLeaderboard() {
     const listEl = document.getElementById('leaderboardContent');
     listEl.innerHTML = '';
 
-    let leaders = botNames.map((name, i) => ({
-        name, score: Math.floor(mulberry32(105 + i)() * 35000) + 2048, rank: 0
-    }));
+    // Start with fixed leaders
+    let leaders = [...fixedLeaders];
+
+    // Add bot names with generated scores
+    botNames.forEach(bot => {
+        leaders.push({
+            name: bot.name,
+            score: bot.score !== null ? bot.score : Math.floor(mulberry32(105 + leaders.length)() * 35000) + 2048,
+            rank: 0
+        });
+    });
+
+    // Add current player
     leaders.push({ name: "Вы (Вызов)", score: scoreV, isPlayer: true });
+
+    // Sort by score (descending)
     leaders.sort((a, b) => b.score - a.score);
 
     leaders.forEach((l, idx) => {
         const el = document.createElement('div');
         el.className = 'leader-item';
-        if (l.isPlayer) el.style.borderColor = '#38bdf8';
+        if (l.isPlayer) {
+            el.style.borderColor = '#38bdf8';
+        }
         el.innerHTML = `
             <div class="leader-name"><span class="leader-rank">#${idx+1}</span>${l.name}</div>
             <div class="leader-score">${l.score}</div>`;
@@ -995,6 +1170,13 @@ window.addEventListener('touchmove', e => {
 
 // Функция для показа всплывающего окна нового рекорда
 function showNewRecordPopup() {
+    // FIX: Проверяем, что попап еще не существует и рекорд не был показан в этой сессии
+    if (recordBrokenThisRun || document.querySelector('.new-record-popup')) {
+        return;
+    }
+
+    recordBrokenThisRun = true;
+
     const popup = document.createElement('div');
     popup.className = 'new-record-popup';
     popup.textContent = 'НОВЫЙ РЕКОРД! 🏆';
@@ -1008,6 +1190,31 @@ function showNewRecordPopup() {
     }, 1500);
 }
 
+// Share to Story function
+function shareToStory() {
+    const text = `🔥 Мой рекорд в 2048 Duel — ${bestV} очков! Сможешь побить? 🏆`;
+
+    if (window.Telegram?.WebApp?.shareToStory) {
+        try {
+            window.Telegram.WebApp.shareToStory({
+                type: 'text',
+                text: text,
+                widget_link: {
+                    url: window.location.origin + window.location.pathname,
+                    text: 'Играй в 2048 Duel!'
+                }
+            });
+        } catch (e) {
+            console.error('Failed to share to story:', e);
+            // Fallback to regular sharing
+            shareResult();
+        }
+    } else {
+        // Fallback to regular sharing if shareToStory is not available
+        shareResult();
+    }
+}
+
 // Добавленные функции
 function initGame() {
     // Загружаем настройки из localStorage
@@ -1015,6 +1222,13 @@ function initGame() {
     theme(localStorage.theme || 'dark');
     toggleButtons(localStorage.showButtons === '1');
     bestV = parseInt(localStorage.bestScore) || 0;
+
+    // Try to load progress from Telegram Cloud Storage first
+    if (!LS.loadProgressFromCloud()) {
+        // If cloud storage fails or is not available, load from localStorage
+        bestV = parseInt(localStorage.bestScore) || bestV;
+        loadStats();
+    }
 
     // Инициализируем игру
     buildGridBackground();
