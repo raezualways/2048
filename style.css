@@ -196,10 +196,11 @@ body.vintage .v2 { background: #d4a574; color: #2a1e18; } body.vintage .v4 { bac
 /* Всплывающие меню */
 .menu { position: fixed; inset: 0; display: none; background: rgba(3,7,18,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; opacity:0; transition: opacity 0.25s ease; }
 .menu.open { display: flex; align-items: flex-end; justify-content: center; opacity:1; }
-.sheet { width: min(100vw, 440px); background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.08); padding: 20px; border-radius: 28px 28px 0 0; max-height: 85dvh; overflow: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.16,1,0.3,1); }
+.sheet { width: min(100vw, 440px); background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.08); padding: 20px; border-radius: 28px 28px 0 0; max-height: 85dvh; box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.16,1,0.3,1); display: flex; flex-direction: column; }
 body.light .sheet { background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.06); }
 .menu.open .sheet { transform: translateY(0); }
-.tab-nav { display: flex; gap: 6px; margin-bottom: 16px; }
+.sheet-content { flex: 1; overflow: auto; padding-bottom: 10px; }
+.tab-nav { display: flex; gap: 6px; margin-top: 16px; order: 1; }
 .tab-btn { flex: 1; padding: 12px 6px; border: 1px solid var(--border); background: var(--empty); color: var(--text); border-radius: 14px; font-weight: 600; font-size: 12px; cursor: pointer; text-align: center; }
 .tab-btn.active { background: var(--panel); border-color: #38bdf8; color: #38bdf8; }
 .tab-content { display: none; }
@@ -262,3 +263,37 @@ input:checked + .slider:before { transform: translateX(18px); }
 .achievement .icon { font-size: 20px; }
 .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(34,197,94,0.95); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 600; z-index: 100; opacity:0; transition: opacity 0.3s; pointer-events:none; }
 .toast.show { opacity:1; }
+
+/* Add padding to main content */
+.app {
+    padding-bottom: 20px !important;
+}
+
+.boardWrap {
+    padding-bottom: 10px !important;
+}
+
+/* No achievements empty state */
+.no-achievements {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    text-align: center;
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    margin: 20px 0;
+    opacity: 0.6;
+}
+
+.no-achievements .icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.no-achievements .text {
+    font-size: 14px;
+    line-height: 1.4;
+    max-width: 240px;
+}
