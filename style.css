@@ -1,14 +1,16 @@
+/* === Основные стили (очищено от дубликатов) === */
 html, body {
     margin: 0; padding: 0;
     width: 100vw;
-    min-height: 100dvh; /* Use dynamic viewport height */
+    min-height: 100dvh;
     overflow: hidden;
     overscroll-behavior: contain;
     background-color: #faf8ef;
-    position: fixed;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
     box-sizing: border-box;
 }
-
 /* FIX: Разрешаем прокрутку только в специфичных элементах */
 .ach-menu-grid, .sheet {
     touch-action: pan-y !important;
@@ -52,7 +54,16 @@ body.vintage {
 }
 
 body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; }
-.app { width: 100%; max-width: 500px; height: 100dvh; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+.app {
+    width: 100%;
+    max-width: 500px;
+    height: 100dvh;
+    padding: 20px 20px 85px 20px; /* Увеличен bottom padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; background: linear-gradient(45deg, var(--text), rgba(128,128,128,0.4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
@@ -117,6 +128,24 @@ h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; backgro
 
 .combo-active {
     animation: comboPulse 0.3s ease-in-out;
+}
+
+/* Modern Bottom Navigation Bar */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 9999;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .shake-animation {
@@ -200,7 +229,33 @@ body.vintage .v2 { background: #d4a574; color: #2a1e18; } body.vintage .v4 { bac
 body.light .sheet { background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.06); }
 .menu.open .sheet { transform: translateY(0); }
 .sheet-content { flex: 1; overflow: auto; padding-bottom: 10px; }
-.tab-nav { display: flex; gap: 6px; margin-top: 16px; order: 1; }
+.nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 0;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    opacity: 0.7;
+}
+.nav-btn.active {
+    opacity: 1;
+    background: rgba(56, 189, 248, 0.15);
+}
+.nav-btn:active {
+    transform: scale(0.95);
+    opacity: 0.9;
+}
+.nav-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
 .tab-btn { flex: 1; padding: 12px 6px; border: 1px solid var(--border); background: var(--empty); color: var(--text); border-radius: 14px; font-weight: 600; font-size: 12px; cursor: pointer; text-align: center; }
 .tab-btn.active { background: var(--panel); border-color: #38bdf8; color: #38bdf8; }
 .tab-content { display: none; }
