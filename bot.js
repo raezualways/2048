@@ -34,6 +34,20 @@ const webAppButton = {
     web_app: {url: GAME_URL}
 };
 
+// Debug: Log when bot receives any message
+bot.on('message', (msg) => {
+    console.log('📩 Received message:', msg.text, 'from', msg.from.first_name);
+});
+
+// Add success handler
+bot.on('webhook_error', (error) => {
+    console.error('⚠️ Webhook error:', error);
+});
+
+// Log when bot is successfully connected
+console.log('✅ Bot initialized successfully');
+console.log('🔄 Using polling mode for message updates');
+
 // Start command handler
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
