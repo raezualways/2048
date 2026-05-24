@@ -887,27 +887,46 @@ function renderAchievementsTab() {
     let unlocked = 0;
     let total = 0;
 
+    // Count total and earned achievements
     for (const id in achievements) {
         total++;
-        const a = achievements[id];
-        if (a.earned) unlocked++;
-
-        const card = document.createElement('div');
-        card.className = `ach-item-card ${a.earned ? 'earned' : ''}`;
-        card.innerHTML = `
-            <div class="ach-card-icon">${a.icon}</div>
-            <div class="ach-card-name">${a.name}</div>
-            <div class="ach-card-desc">${a.desc}</div>
-        `;
-        grid.appendChild(card);
+        if (achievements[id].earned) unlocked++;
     }
 
+    // Update progress display
     const countEl = document.getElementById('achUnlockedCount');
     const fillEl = document.getElementById('achProgressFill');
     if (countEl) countEl.textContent = unlocked;
     if (fillEl) {
         const percent = (unlocked / total) * 100;
         fillEl.style.width = `${percent}%`;
+    }
+
+    // If no achievements earned, show empty state
+    if (unlocked === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'no-achievements';
+        emptyState.innerHTML = `
+            <div class="icon">🏆</div>
+            <div class="text">Список пока пуст! Вы еще не разблокировали ни одного достижения. Время объединить пару плиток!</div>
+        `;
+        grid.appendChild(emptyState);
+        return;
+    }
+
+    // Only render earned achievements
+    for (const id in achievements) {
+        const a = achievements[id];
+        if (!a.earned) continue; // Skip unearned achievements
+
+        const card = document.createElement('div');
+        card.className = `ach-item-card earned`;
+        card.innerHTML = `
+            <div class="ach-card-icon">${a.icon}</div>
+            <div class="ach-card-name">${a.name}</div>
+            <div class="ach-card-desc">${a.desc}</div>
+        `;
+        grid.appendChild(card);
     }
 }
 
