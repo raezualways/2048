@@ -9,6 +9,12 @@ html, body {
     box-sizing: border-box;
 }
 
+/* FIX: Разрешаем прокрутку только в специфичных элементах */
+.ach-menu-grid, .sheet {
+    touch-action: pan-y !important;
+    overscroll-behavior: auto !important;
+}
+
 * { box-sizing: border-box; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
 html, body { margin: 0; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-user-select: none; user-select: none; touch-action: none; }
 
@@ -97,6 +103,29 @@ h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; backgro
     100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
 @keyframes dotDimPulse { 0%, 100% { opacity: 0.32; } 50% { opacity: 0.80; } }
+
+@keyframes comboPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+@keyframes shakeAnimation {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.combo-active {
+    animation: comboPulse 0.3s ease-in-out;
+}
+
+.shake-animation {
+    animation: shakeAnimation 0.3s ease-in-out;
+}
+
+.score-box.shake-animation {
+    animation: shakeAnimation 0.3s ease-in-out;
+}
 .target-card {
 display: flex; align-items: center; gap: 10px;
 background: var(--panel); border: 1px solid var(--border);
@@ -198,7 +227,36 @@ input:checked + .slider:before { transform: translateX(18px); }
 .leader-name { display: flex; align-items: center; gap: 8px; }
 .leader-rank { font-weight: 800; color: #eab308; width: 18px; }
 .leader-score { font-weight: 800; color: #38bdf8; }
-.achievement-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; }
+.achievement-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 6px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-top: 12px;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar for achievements menu */
+.achievement-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.achievement-grid::-webkit-scrollbar-track {
+    background: var(--empty);
+    border-radius: 3px;
+}
+
+.achievement-grid::-webkit-scrollbar-thumb {
+    background: #38bdf8;
+    border-radius: 3px;
+}
+
+.achievement-grid::-webkit-scrollbar-thumb:hover {
+    background: #22c55e;
+}
 .achievement { background: var(--empty); padding: 10px; border-radius: 12px; border: 1px solid var(--border); text-align: center; font-size: 11px; opacity: 0.4; }
 .achievement.earned { background: rgba(34,197,94,0.15); border-color: #22c55e; opacity: 1; }
 .achievement .icon { font-size: 20px; }
