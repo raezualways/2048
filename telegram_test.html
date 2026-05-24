@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Web App Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .test-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .test-result {
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 4px;
+        }
+        .success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        .error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <h1>Telegram Web App Test</h1>
+
+    <div class="test-section">
+        <div class="test-title">1. Telegram WebApp Object Test</div>
+        <div id="webappTest" class="test-result">Testing Telegram WebApp...</div>
+    </div>
+
+    <div class="test-section">
+        <div class="test-title">2. Basic File Loading Test</div>
+        <div id="fileTest" class="test-result">Testing file loading...</div>
+    </div>
+
+    <div class="test-section">
+        <div class="test-title">3. Service Worker Test</div>
+        <div id="swTest" class="test-result">Testing service worker...</div>
+    </div>
+
+    <script>
+        // Test 1: Telegram WebApp
+        if (window.Telegram && window.Telegram.WebApp) {
+            document.getElementById('webappTest').className = 'test-result success';
+            document.getElementById('webappTest').textContent = '✓ Telegram WebApp is available';
+        } else {
+            document.getElementById('webappTest').className = 'test-result error';
+            document.getElementById('webappTest').textContent = '✗ Telegram WebApp not available (running in browser)';
+        }
+
+        // Test 2: File loading
+        fetch('index.html')
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('fileTest').className = 'test-result success';
+                    document.getElementById('fileTest').textContent = '✓ index.html loads correctly';
+                } else {
+                    document.getElementById('fileTest').className = 'test-result error';
+                    document.getElementById('fileTest').textContent = '✗ index.html not found';
+                }
+            })
+            .catch(error => {
+                document.getElementById('fileTest').className = 'test-result error';
+                document.getElementById('fileTest').textContent = '✗ Error loading index.html';
+            });
+
+        // Test 3: Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => {
+                    document.getElementById('swTest').className = 'test-result success';
+                    document.getElementById('swTest').textContent = '✓ Service worker registered successfully';
+                })
+                .catch(error => {
+                    document.getElementById('swTest').className = 'test-result error';
+                    document.getElementById('swTest').textContent = '✗ Service worker registration failed: ' + error.message;
+                });
+        } else {
+            document.getElementById('swTest').className = 'test-result error';
+            document.getElementById('swTest').textContent = '✗ Service worker not supported';
+        }
+    </script>
+</body>
+</html>
