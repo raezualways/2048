@@ -39,16 +39,16 @@ bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const firstName = msg.from.first_name || 'Player';
 
-    // Welcome message
+    // Welcome message (HTML format for reliability)
     const welcomeMessage = `
-🎮 *Welcome to 2048 Telegram Game!* 🎮
+🎮 <b>Welcome to 2048 Telegram Game!</b> 🎮
 
-Hello, *${firstName}*! 👋
+Hello, ${firstName}! 👋
 
-This is the official Telegram bot for the *2048 Duel Edition* game.
+This is the official Telegram bot for the <b>2048 Duel Edition</b> game.
 Click the button below to launch the game directly in Telegram!
 
-💡 *Features:*
+💡 <b>Features:</b>
 ✅ Play 2048 without leaving Telegram
 ✅ Beautiful themes and animations
 ✅ Achievements system
@@ -60,7 +60,7 @@ Click the button below to launch the game directly in Telegram!
 
     // Send welcome message with Web App button
     bot.sendMessage(chatId, welcomeMessage, {
-        parse_mode: 'Markdown',
+        parse_mode: 'HTML',
         reply_markup: {
             inline_keyboard: [[webAppButton]]
         }
@@ -72,24 +72,24 @@ bot.onText(/\/help/, (msg) => {
     const chatId = msg.chat.id;
 
     const helpMessage = `
-📖 *2048 Game Bot - Help*
+📖 <b>2048 Game Bot - Help</b>
 
-*Available commands:*
+<b>Available commands:</b>
 /start - Launch the game
 /help - Show this help message
 
-*How to play:*
+<b>How to play:</b>
 1. Click the "Play 2048 Now" button
 2. The game will open in Telegram's web view
 3. Use swipe gestures or arrow buttons to move tiles
 4. Combine tiles with the same numbers to reach 2048!
 
-*Need support?*
+<b>Need support?</b>
 Contact: @your_support_channel
 `;
 
     bot.sendMessage(chatId, helpMessage, {
-        parse_mode: 'Markdown',
+        parse_mode: 'HTML',
         reply_markup: {
             inline_keyboard: [[webAppButton]]
         }
@@ -98,7 +98,10 @@ Contact: @your_support_channel
 
 // Error handling
 bot.on('polling_error', (error) => {
-    console.error('Polling error:', error.code, error.response.body);
+    console.error('❌ Polling error:', error.code);
+    if (error.response && error.response.body) {
+        console.error('📋 Детали ошибки от Telegram:', JSON.stringify(error.response.body));
+    }
 });
 
 // Bot started message
