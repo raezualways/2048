@@ -1333,6 +1333,14 @@ async function initGame() {
     // Инициализируем игру
     buildGridBackground();
     start();
+
+    // Initialize bottom navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-tab');
+            switchTab(tab);
+        });
+    });
 }
 
 // Запуск игры при загрузке DOM
