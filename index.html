@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <link rel="stylesheet" href="style.css">
+    <title>2048 Duel Edition</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="dark">
+<div class="app">
+    <div class="top">
+        <h1>2048</h1>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <div class="score-container">
+                <div class="score-box">
+                    <div><div class="score-label">Счет</div><span id="score">0</span></div>
+                    <div style="border-left:1px solid var(--border); padding-left:12px;"><div class="score-label">Рекорд</div><span id="best">0</span></div>
+                </div>
+                <div id="scoreAdditionContainer"></div>
+                <div id="targetCard" class="target-card target-hidden"></div>
+            </div>
+            <button class="btn" onclick="openMenu('mainMenu')" title="Настройки">⚙️</button>
+        </div>
+    </div>
+    <div class="boardWrap">
+        <div id="board" class="board">
+            <div id="gridBackground" class="grid-background"></div>
+            <div id="tileContainer" class="tile-container"></div>
+        </div>
+        <div id="gameOverOverlay" class="overlay">
+            <h2 id="overlayTitle">Игра окончена!</h2>
+            <div id="resultCardContainer"></div>
+            <button class="btn" style="padding:16px 32px;" onclick="start()">Играть снова 🔄</button>
+        </div>
+    </div>
+    <div id="toast" class="toast">Ссылка скопирована!</div>
+</div>
+
+<!-- Основное меню настроек -->
+<div id="mainMenu" class="menu" onclick="closeMenu(event, 'mainMenu')">
+    <div class="sheet">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h2 style="margin:0; font-size:20px;">Настройки</h2>
+            <button class="close-btn" onclick="closeMenu(null, 'mainMenu', true)">✕</button>
+        </div>
+
+        <div class="sheet-content">
+            <!-- Bottom Navigation Panel -->
+            <div class="bottom-nav">
+                <div onclick="switchTab(0)"><img src="game-icon.png">Игра</div>
+                <div onclick="switchTab(1)"><img src="duel-icon.png">Дуэли</div>
+                <div onclick="switchTab(2)"><img src="theme-icon.png">Темы</div>
+                <div onclick="switchTab(3)"><img src="stats-icon.png">Статьи</div>
+            </div>
+
+            <!-- Game Settings Section -->
+            <div class="tab-content active" id="tab-game">
+                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+                    <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700;">🎮 Игра</h3>
+                    <div style="display:flex; gap:6px; margin-bottom:12px;">
+                        <button class="opt opt-wide opt-share" style="margin:0;" onclick="start(); closeMenu(null,'mainMenu',true)">🔄 Начать заново</button>
+                        <button class="opt opt-wide" style="margin:0; color:var(--text);" onclick="undo(); closeMenu(null,'mainMenu',true)">↩️ Отмена хода</button>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">📐 Размер поля</div>
+                        <div class="grid-opts">
+                            <button class="opt" id="opt-sz4" onclick="changeSize(4)">4×4</button>
+                            <button class="opt" id="opt-sz5" onclick="changeSize(5)">5×5</button>
+                            <button class="opt" id="opt-sz6" onclick="changeSize(6)">6×6</button>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">🎮 Управление</div>
+                        <div class="toggle-box"><span>Управление жестами</span><label class="switch"><input type="checkbox" id="btnToggle" onchange="toggleButtons(this.checked)"><span class="slider"></span></label></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Duels Section -->
+            <div class="tab-content" id="tab-duels">
+                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+                    <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700;">⚔️ Дуэли</h3>
+                    <button class="opt opt-wide" onclick="showDailyChallenge()">📅 Ежедневный Вызов</button>
+                    <div style="display:flex; gap:6px; margin:8px 0;">
+                        <button class="opt opt-share" style="flex:1" onclick="challengeFriend()">⚔️ Вызвать друга</button>
+                        <button class="opt opt-share" style="flex:1" onclick="copyBattleInviteLink()">🔗 Копировать приглашение</button>
+                    </div>
+                    <button class="opt opt-wide opt-leader" onclick="openLeaderboard()">🥇 Таблица лидеров</button>
+                    <button class="opt opt-wide opt-share" onclick="shareResult()">🚀 Поделиться рекордом</button>
+                </div>
+            </div>
+
+            <!-- Themes Section -->
+            <div class="tab-content" id="tab-themes">
+                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+                    <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700;">🎨 Темы</h3>
+                    <div class="grid-opts themes">
+                        <button class="opt" onclick="theme('dark')">🎨 Dark</button>
+                        <button class="opt" onclick="theme('light')">🌞 Light</button>
+                        <button class="opt" onclick="theme('ocean')">🌊 Ocean</button>
+                        <button class="opt" onclick="theme('sakura')">🌸 Sakura</button>
+                        <button class="opt" onclick="theme('neon')">💡 Neon</button>
+                        <button class="opt" onclick="theme('cyberpunk')">🤖 Cyberpunk</button>
+                        <button class="opt" onclick="theme('nordic')">❄️ Nordic</button>
+                        <button class="opt" onclick="theme('vintage')">☕ Vintage</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="tab-content" id="tab-stats">
+                <div style="margin-bottom: 0;">
+                    <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700;">📊 Статы</h3>
+                    <div id="statsContainer" class="toggle-box" style="flex-direction:column; align-items:flex-start; gap:4px; background:transparent; border:none; padding:0;"></div>
+                    <div class="section">
+                        <div id="achievementsContainer" class="achievement-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leaderboard -->
+<div id="leaderMenu" class="menu" onclick="closeMenu(event, 'leaderMenu')">
+    <div class="sheet">
+        <div style="display:flex; justify-content:space-between;"><h2>Топ игроков</h2><button class="close-btn" onclick="closeMenu(null,'leaderMenu',true)">✕</button></div>
+        <div id="leaderboardContent" class="leader-list"></div>
+    </div>
+</div>
+
+<!-- Daily Challenge -->
+<div id="dailyChallengeMenu" class="menu" onclick="closeMenu(event, 'dailyChallengeMenu')">
+    <div class="sheet">
+        <div style="display:flex; justify-content:space-between;"><h2>Ежедневный хардкор-вызов</h2><button class="close-btn" onclick="closeMenu(null,'dailyChallengeMenu',true)">✕</button></div>
+        <p style="margin:6px 0; font-size:14px; opacity:0.8;">Модификатор: <b id="dailyModifierDesc" style="color:#ef4444;"></b></p>
+        <p style="font-size:13px; opacity:0.6;">Seed дня: <span id="dailySeedDisplay"></span></p>
+        <button class="opt opt-wide" onclick="startDailyChallenge()">🎯 Начать испытание</button>
+    </div>
+</div>
+
+
+</body>
+<script src="game.js"></script>
+</html>     <div class="score-container">
+                <div class="score-box">
+                    <div><div class="score-label">Счет</div><span id="score">0</span></div>
+                    <div style="border-left:1px solid var(--border); padding-left:12px;"><div class="score-label">Рекорд</div><span id="best">0</span></div>
+                </div>
+                <div id="scoreAdditionContainer"></div>
+                <div id="targetCard" class="target-card target-hidden"></div>
+            </div>
+            <button class="btn" onclick="openMenu('mainMenu')" title="Настройки">⚙️</button>
+        </div>
+    </div>
+    <div class="boardWrap">
+        <div id="board" class="board">
+            <div id="gridBackground" class="grid-background"></div>
+            <div id="tileContainer" class="tile-container"></div>
+        </div>
+        <div id="gameOverOverlay" class="overlay">
+            <h2 id="overlayTitle">Игра окончена!</h2>
+            <div id="resultCardContainer"></div>
+            <button class="btn" style="padding:16px 32px;" onclick="start()">Играть снова 🔄</button>
+        </div>
+    </div>
+    <div id="toast" class="toast">Ссылка скопирована!</div>
+</div>
+
+<!-- Основное меню настроек -->
+<div id="mainMenu" class="menu" onclick="closeMenu(event, 'mainMenu')">
+    <div class="sheet">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h2 style="margin:0; font-size:20px;">Настройки</h2>
+            <button class="close-btn" onclick="closeMenu(null, 'mainMenu', true)">✕</button>
+        </div>
+
+        <div class="sheet-content">
+            <!-- Bottom Navigation Panel -->
+            <div class="bottom-nav">
+                <div onclick="switchTab(0)"><img src="game-icon.png">Игра</div>
+                <div onclick="switchTab(1)"><img src="duel-icon.png">Дуэли</div>
+                <div onclick="switchTab(2)"><img src="theme-icon.png">Темы</div>
+                <div onclick="switchTab(3)"><img src="stats-icon.png">Статьи</div>
+            </div>
+
