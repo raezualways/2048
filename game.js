@@ -183,16 +183,31 @@ const LS = {
             // Try Telegram WebApp storage first if available
             if (window.Telegram?.WebApp?.CloudStorage) {
                 try {
-                    const value = window.Telegram.WebApp.CloudStorage.getItem(key);
-                    return value ? JSON.parse(value) : def;
+                    // Use async API with Promise wrapper
+                    return new Promise((resolve) => {
+                        window.Telegram.WebApp.CloudStorage.getItem(key, (error, value) => {
+                            if (error || !value) {
+                                resolve(def);
+                            } else {
+                                try {
+                                    resolve(JSON.parse(value));
+                                } catch (e) {
+                                    console.log('Telegram storage parse failed, falling back to localStorage');
+                                    resolve(def);
+                                }
+                            }
+                        });
+                    });
                 } catch (e) {
                     console.log('Telegram storage read failed, falling back to localStorage');
+                    return Promise.resolve(JSON.parse(localStorage.getItem(key)) ?? def);
                 }
             }
             // Fall back to localStorage
-            return JSON.parse(localStorage.getItem(key)) ?? def;
+            return Promise.resolve(JSON.parse(localStorage.getItem(key)) ?? def);
         } catch(e) {
-            return def;
+            console.error('Storage get error:', e);
+            return Promise.resolve(def);
         }
     },
     set(key, val) {
@@ -201,7 +216,12 @@ const LS = {
             // For best score, save to Telegram storage if available
             if (key === 'bestScore' && window.Telegram?.WebApp?.CloudStorage) {
                 try {
-                    window.Telegram.WebApp.CloudStorage.setItem(key, JSON.stringify(val));
+                    window.Telegram.WebApp.CloudStorage.setItem(key, JSON.stringify(val), (error) => {
+                        if (error) {
+                            console.log('Telegram storage write failed, falling back to localStorage');
+                            localStorage.setItem(key, JSON.stringify(val));
+                        }
+                    });
                 } catch (e) {
                     console.log('Telegram storage write failed, falling back to localStorage');
                     localStorage.setItem(key, JSON.stringify(val));
@@ -214,48 +234,69 @@ const LS = {
         }
     },
     saveProgressToCloud() {
-        try {
-            if (window.Telegram?.WebApp?.CloudStorage) {
-                const progressData = {
-                    bestV: bestV,
-                    stats: stats,
-                    achievements: achievements
-                };
-                window.Telegram.WebApp.CloudStorage.setItem('user_progress', JSON.stringify(progressData));
-                console.log('Progress saved to Telegram Cloud Storage');
-                return true;
+        return new Promise((resolve) => {
+            try {
+                if (window.Telegram?.WebApp?.CloudStorage) {
+                    const progressData = {
+                        bestV: bestV,
+                        stats: stats,
+                        achievements: achievements
+                    };
+                    window.Telegram.WebApp.CloudStorage.setItem('user_progress', JSON.stringify(progressData), (error) => {
+                        if (error) {
+                            console.error('Failed to save progress to Telegram Cloud Storage:', error);
+                            resolve(false);
+                        } else {
+                            console.log('Progress saved to Telegram Cloud Storage');
+                            resolve(true);
+                        }
+                    });
+                } else {
+                    resolve(false);
+                }
+            } catch (e) {
+                console.error('Failed to save progress to Telegram Cloud Storage:', e);
+                resolve(false);
             }
-        } catch (e) {
-            console.error('Failed to save progress to Telegram Cloud Storage:', e);
-            return false;
-        }
-        return false;
+        });
     },
     loadProgressFromCloud() {
-        try {
-            if (window.Telegram?.WebApp?.CloudStorage) {
-                const savedData = window.Telegram.WebApp.CloudStorage.getItem('user_progress');
-                if (savedData) {
-                    const progressData = JSON.parse(savedData);
-                    bestV = progressData.bestV || bestV;
-                    stats = progressData.stats || stats;
-                    // Restore achievements
-                    if (progressData.achievements) {
-                        for (const id in progressData.achievements) {
-                            if (achievements[id]) {
-                                achievements[id].earned = progressData.achievements[id].earned;
+        return new Promise((resolve) => {
+            try {
+                if (window.Telegram?.WebApp?.CloudStorage) {
+                    window.Telegram.WebApp.CloudStorage.getItem('user_progress', (error, savedData) => {
+                        if (error || !savedData) {
+                            console.log('No cloud data found, falling back to localStorage');
+                            resolve(false);
+                        } else {
+                            try {
+                                const progressData = JSON.parse(savedData);
+                                bestV = progressData.bestV || bestV;
+                                stats = progressData.stats || stats;
+                                // Restore achievements
+                                if (progressData.achievements) {
+                                    for (const id in progressData.achievements) {
+                                        if (achievements[id]) {
+                                            achievements[id].earned = progressData.achievements[id].earned;
+                                        }
+                                    }
+                                }
+                                console.log('Progress loaded from Telegram Cloud Storage');
+                                resolve(true);
+                            } catch (e) {
+                                console.error('Failed to parse cloud progress data:', e);
+                                resolve(false);
                             }
                         }
-                    }
-                    console.log('Progress loaded from Telegram Cloud Storage');
-                    return true;
+                    });
+                } else {
+                    resolve(false);
                 }
+            } catch (e) {
+                console.error('Failed to load progress from Telegram Cloud Storage:', e);
+                resolve(false);
             }
-        } catch (e) {
-            console.error('Failed to load progress from Telegram Cloud Storage:', e);
-            return false;
-        }
-        return false;
+        });
     }
 };
 
@@ -931,7 +972,14 @@ function renderAchievementsTab() {
 }
 
 function loadGame() {
-    const saved = localStorage.savedGame ? JSON.parse(localStorage.savedGame) : null;
+    let saved = null;
+    try {
+        saved = localStorage.savedGame ? JSON.parse(localStorage.savedGame) : null;
+    } catch (e) {
+        console.error('Failed to parse saved game data:', e);
+        localStorage.removeItem('savedGame');
+    }
+
     size = parseInt(localStorage.gridSize) || 4;
     bestV = parseInt(localStorage.bestScore) || 0;
     theme(localStorage.theme || 'dark');
@@ -1147,6 +1195,7 @@ function openMenu(id) {
     m.style.display = 'flex';
     setTimeout(() => m.classList.add('open'), 10);
     if (id === 'mainMenu') switchTab('game');
+    isMenuOpen = true;
 }
 
 function closeMenu(e, id, force = false) {
@@ -1154,6 +1203,7 @@ function closeMenu(e, id, force = false) {
     if (m && (force || e.target === m)) {
         m.classList.remove('open');
         setTimeout(() => m.style.display = 'none', 250);
+        isMenuOpen = false;
     }
 }
 
@@ -1180,12 +1230,14 @@ window.addEventListener('keydown', e => {
 }, { passive: false });
 
 let tsX = null, tsY = null;
+let isMenuOpen = false;
+
 window.addEventListener('touchstart', e => {
     tsX = e.touches[0].clientX; tsY = e.touches[0].clientY;
 }, { passive: true });
 
 window.addEventListener('touchmove', e => {
-    if (!tsX || !tsY) return;
+    if (!tsX || !tsY || isMenuOpen) return;
     let tdX = e.touches[0].clientX - tsX, tdY = e.touches[0].clientY - tsY;
     let swipeThreshold = Math.min(window.innerWidth * 0.1, 60);
 
@@ -1231,7 +1283,7 @@ function shareToStory() {
                 type: 'text',
                 text: text,
                 widget_link: {
-                    url: window.location.origin + window.location.pathname,
+                    url: 'https://t.me/your_2048_bot/app', // Direct link to Telegram bot
                     text: 'Играй в 2048 Duel!'
                 }
             });
@@ -1247,7 +1299,7 @@ function shareToStory() {
 }
 
 // Добавленные функции
-function initGame() {
+async function initGame() {
     // Загружаем настройки из localStorage
     size = parseInt(localStorage.gridSize) || 4;
     theme(localStorage.theme || 'dark');
@@ -1255,8 +1307,16 @@ function initGame() {
     bestV = parseInt(localStorage.bestScore) || 0;
 
     // Try to load progress from Telegram Cloud Storage first
-    if (!LS.loadProgressFromCloud()) {
-        // If cloud storage fails or is not available, load from localStorage
+    try {
+        const cloudLoaded = await LS.loadProgressFromCloud();
+        if (!cloudLoaded) {
+            // If cloud storage fails or is not available, load from localStorage
+            bestV = parseInt(localStorage.bestScore) || bestV;
+            loadStats();
+        }
+    } catch (e) {
+        console.error('Failed to load cloud progress:', e);
+        // Fallback to localStorage
         bestV = parseInt(localStorage.bestScore) || bestV;
         loadStats();
     }
