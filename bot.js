@@ -1,90 +1,68 @@
 /**
  * Telegram Bot for 2048 Game Web App
- *
- * This bot provides a simple interface to launch the 2048 game as a Telegram Web App.
- * Users can start the bot and click a button to open the game directly in Telegram.
  */
 
-// Import required modules
 const TelegramBot = require('node-telegram-bot-api');
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config(); 
 
-// Configuration - Load from environment variables
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_TOKEN; // Loaded from .env file
-const GAME_URL = process.env.GAME_URL; // Loaded from .env file
+// FIX 1: Поддерживаем оба варианта названия переменной из .env и .env.example
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
+const GAME_URL = process.env.GAME_URL;
 
-// For local development, you might use something like:
-// const GAME_URL = 'https://your-ngrok-url.ngrok.io/2048-1.html';
-// For production, use your actual domain:
-// const GAME_URL = 'https://your-domain.com/2048-1.html';
-
-// Validate environment variables
-if (!TELEGRAM_BOT_TOKEN || !GAME_URL) {
-    console.error('❌ Configuration Error: Missing environment variables!');
-    console.error('Please create a .env file with TELEGRAM_TOKEN and GAME_URL');
+// FIX 2: Умная валидация конфига перед запуском
+if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN.includes('вставь_сюда') || TELEGRAM_BOT_TOKEN === 'your_bot_token_here') {
+    console.error('❌ Ошибка конфигурации: Токен бота отсутствует или содержит заглушку!');
+    console.error('Пожалуйста, создайте файл .env и укажите реальный токен от @BotFather.');
     process.exit(1);
 }
 
-// Create a bot instance
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, {polling: true});
+if (!GAME_URL || GAME_URL.includes('вставь_сюда') || GAME_URL.includes('your-game-url')) {
+    console.error('❌ Ошибка конфигурации: URL игры отсутствует или содержит заглушку!');
+    console.error('Пожалуйста, укажите валидный адрес игры в переменной GAME_URL внутри .env');
+    process.exit(1);
+}
 
-// Web App button configuration
+// Проверка протокола безопасности (Telegram Web Apps строго требуют HTTPS)
+if (!GAME_URL.startsWith('https://')) {
+    console.warn('⚠️  ВНИМАНИЕ: GAME_URL должен начинаться с https://');
+    console.warn('Если вы тестируете локально, используйте Ngrok/Localtunnel. Обычный http:// Telegram заблокирует.');
+}
+
+// Инициализация бота
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
+
+// Конфигурация инлайн-кнопки для запуска Web App
 const webAppButton = {
     text: '🎮 Play 2048 Now',
-    web_app: {url: GAME_URL}
+    web_app: { url: GAME_URL }
 };
 
-// Debug: Log when bot receives any message
-bot.on('message', (msg) => {
-    console.log('📩 Received message:', msg.text, 'from', msg.from.first_name);
-});
-
-// Add success handler
-bot.on('webhook_error', (error) => {
-    console.error('⚠️ Webhook error:', error);
-});
-
-// Log when bot is successfully connected
-console.log('✅ Bot initialized successfully');
-console.log('🔄 Using polling mode for message updates');
-
-// Start command handler
+// Хэндлер команды /start
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-    const firstName = msg.from.first_name || 'Player';
-
-    // Welcome message (HTML format for reliability)
     const welcomeMessage = `
-🎮 <b>Welcome to 2048 Telegram Game!</b> 🎮
+🎮 <b>Добро пожаловать в 2048 Duel Edition!</b>
 
-Hello, ${firstName}! 👋
-
-This is the official Telegram bot for the <b>2048 Duel Edition</b> game.
-Click the button below to launch the game directly in Telegram!
-
-💡 <b>Features:</b>
-✅ Play 2048 without leaving Telegram
-✅ Beautiful themes and animations
-✅ Achievements system
-✅ Daily challenges
-✅ Multiplayer duels
-
-🔥 Click the button to start playing!
+Нажмите кнопку ниже, чтобы запустить игру прямо внутри Telegram.
 `;
 
-    // Send welcome message with Web App button
     bot.sendMessage(chatId, welcomeMessage, {
         parse_mode: 'HTML',
         reply_markup: {
             inline_keyboard: [[webAppButton]]
         }
+    }).catch((error) => {
+        // FIX 3: Выводим ошибку, если Telegram отклонил кнопку (например, из-за неверного URL)
+        console.error('❌ Ошибка при обработке /start:', error.message);
+        if (error.message.includes('WEB_APP_URL_INVALID')) {
+            console.error('👉 Критическая ошибка: Указанный GAME_URL некорректен или не поддерживается Telegram Bot API.');
+        }
     });
 });
 
-// Help command handler
+// Хэндлер команды /help
 bot.onText(/\/help/, (msg) => {
     const chatId = msg.chat.id;
-
     const helpMessage = `
 📖 <b>2048 Game Bot - Help</b>
 
@@ -94,12 +72,8 @@ bot.onText(/\/help/, (msg) => {
 
 <b>How to play:</b>
 1. Click the "Play 2048 Now" button
-2. The game will open in Telegram's web view
-3. Use swipe gestures or arrow buttons to move tiles
-4. Combine tiles with the same numbers to reach 2048!
-
-<b>Need support?</b>
-Contact: @your_support_channel
+2. Use swipe gestures to move tiles
+3. Combine tiles with the same numbers to reach 2048!
 `;
 
     bot.sendMessage(chatId, helpMessage, {
@@ -107,21 +81,17 @@ Contact: @your_support_channel
         reply_markup: {
             inline_keyboard: [[webAppButton]]
         }
+    }).catch((error) => {
+        console.error('❌ Ошибка при обработке /help:', error.message);
     });
 });
 
-// Error handling
+// Глобальный перехват ошибок соединения
 bot.on('polling_error', (error) => {
-    console.error('❌ Polling error:', error.code);
+    console.error('❌ Поллинг-ошибка бота:', error.code || error.message);
     if (error.response && error.response.body) {
-        console.error('📋 Детали ошибки от Telegram:', JSON.stringify(error.response.body));
+        console.error('📋 Детали от сервера Telegram:', JSON.stringify(error.response.body));
     }
 });
 
-// Bot started message
-console.log('🤖 2048 Telegram Bot is running...');
-console.log('🔹 Waiting for /start commands...');
-console.log('✅ Configuration loaded from .env file');
-console.log('📁 Bot token: ' + (TELEGRAM_BOT_TOKEN ? '✅ Set' : '❌ Missing'));
-console.log('🌐 Game URL: ' + (GAME_URL ? '✅ Set' : '❌ Missing'));
-console.log('💡 Bot is ready to handle Telegram Web App requests!');
+console.log('🚀 Бот успешно запущен и готов к работе!');
