@@ -130,22 +130,19 @@ h1 { font-size: 38px; font-weight: 900; letter-spacing: -1px; margin: 0; backgro
     animation: comboPulse 0.3s ease-in-out;
 }
 
-/* Modern Bottom Navigation Bar */
+/* Simple Bottom Navigation Bar */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 65px;
-    background: rgba(15, 23, 42, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    height: 60px;
+    background: rgba(15, 23, 42, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
     justify-content: space-around;
     z-index: 9999;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .shake-animation {
@@ -236,24 +233,21 @@ body.light .sheet { background: rgba(255,255,255,0.95); border-color: rgba(0,0,0
     align-items: center;
     justify-content: center;
     color: var(--text);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    padding: 6px 0;
-    transition: all 0.2s ease;
+    padding: 8px 0;
     border: none;
     background: none;
-    opacity: 0.7;
+    opacity: 0.6;
 }
 .nav-btn.active {
     opacity: 1;
-    background: rgba(56, 189, 248, 0.15);
 }
 .nav-btn:active {
-    transform: scale(0.95);
-    opacity: 0.9;
+    opacity: 0.8;
 }
 .nav-icon {
-    font-size: 20px;
+    font-size: 18px;
     margin-bottom: 4px;
 }
 .tab-btn { flex: 1; padding: 12px 6px; border: 1px solid var(--border); background: var(--empty); color: var(--text); border-radius: 14px; font-weight: 600; font-size: 12px; cursor: pointer; text-align: center; }
