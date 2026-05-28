@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="description" content="Супер-пупер 2048 с темами, достижениями и таблицей лидеров">
+    <title>2048 Супер-Пупер</title>
+    <link rel="manifest" id="manifest-link">
+    <style>
+        :root {
+            --bg: #faf8ef;
+            --board-bg: #bbada0;
+            --text: #776e65;
+            --text-light: #f9f6f2;
+            --tile-2: #eee4da;
+            --tile-4: #ede0c8;
+            --tile-8: #f2b179;
+            --tile-16: #f59563;
+            --tile-32: #f67c5f;
+            --tile-64: #f65e3b;
+            --tile-128: #edcf72;
+            --tile-256: #edcc61;
+            --tile-512: #edc850;
+            --tile-1024: #edc53f;
+            --tile-2048: #edc22e;
+            --tile-4096: #3c3a32;
+            --tile-8192: #3c3a32;
+            --header-bg: #faf8ef;
+            --btn-bg: #8f7a66;
+            --btn-text: #fff;
+            --modal-bg: rgba(0, 0, 0, 0.6);
+            --panel-bg: #fff;
+            --card-bg: #faf8ef;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            --tile-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --transition: 0.15s ease;
+        }
+
+        /* Themes same as before */
+        [data-theme="neon"] {
+            --bg: #0a0a0f;
+            --board-bg: #12122a;
+            --text: #e0e0ff;
+            --text-light: #fff;
+            --tile-2: #1a1a3e;
+            --tile-4: #1f1f50;
+            --tile-8: #ff6b9d;
+            --tile-16: #ff4088;
+            --tile-32: #ff2d78;
+            --tile-64: #e040fb;
+            --tile-128: #7c4dff;
+            --tile-256: #536dfe;
+            --tile-512: #00e5ff;
+            --tile-1024: #00e676;
+            --tile-2048: #ffea00;
+            --tile-4096: #ff9100;
+            --tile-8192: #ff1744;
+            --header-bg: #0a0a0f;
+            --btn-bg: #7c4dff;
+            --btn-text: #fff;
+            --panel-bg: #14142d;
+            --card-bg: #1a1a35;
+            --shadow: 0 4px 20px rgba(124, 77, 255, 0.3);
+            --tile-shadow: 0 0 15px rgba(124, 77, 255, 0.25);
+        }
+        [data-theme="forest"] {
+            --bg: #e8f5e9;
+            --board-bg: #5d8a5e;
+            --text: #2e3b2e;
+            --text-light: #fff;
+            --tile-2: #c8e6c9;
+            --tile-4: #a5d6a7;
+            --tile-8: #81c784;
+            --tile-16: #66bb6a;
+            --tile-32: #4caf50;
+            --tile-64: #388e3c;
+            --tile-128: #ffb74d;
+            --tile-256: #ff9800;
+            --tile-512: #f57c00;
+            --tile-1024: #e65100;
+            --tile-2048: #bf360c;
+            --tile-4096: #8d6e63;
+            --tile-8192: #5d4037;
+            --header-bg: #e8f5e9;
+            --btn-bg: #388e3c;
+            --btn-text: #fff;
+            --panel-bg: #fff;
+            --card-bg: #f1f8e9;
+            --shadow: 0 4px 15px rgba(56, 142, 60, 0.2);
+            --tile-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+        [data-theme="ocean"] {
+            --bg: #e0f7fa;
+            --board-bg: #0277bd;
+            --text: #01579b;
+            --text-light: #fff;
+            --tile-2: #b3e5fc;
+            --tile-4: #81d4fa;
+            --tile-8: #4fc3f7;
+            --tile-16: #29b6f6;
+            --tile-32: #03a9f4;
+            --tile-64: #0288d1;
+            --tile-128: #ff8a65;
+            --tile-256: #ff7043;
+            --tile-512: #f4511e;
+            --tile-1024: #d84315;
+            --tile-2048: #ffd740;
+            --tile-4096: #ffc400;
+            --tile-8192: #ffab00;
+            --header-bg: #e0f7fa;
+            --btn-bg: #0288d1;
+            --btn-text: #fff;
+            --panel-bg: #fff;
+            --card-bg: #e1f5fe;
+            --shadow: 0 4px 18px rgba(2, 136, 209, 0.25);
+            --tile-shadow: 0 3px 10px rgba(0, 0, 0, 0.13);
+        }
+        [data-theme="sunset"] {
+            --bg: #fff3e0;
+            --board-bg: #bf5e3b;
+            --text: #4e342e;
+            --text-light: #fff;
+            --tile-2: #ffe0b2;
+            --tile-4: #ffcc80;
+            --tile-8: #ffb74d;
+            --tile-16: #ffa726;
+            --tile-32: #ff9800;
+            --tile-64: #f57c00;
+            --tile-128: #ef6c00;
+            --tile-256: #e65100;
+            --tile-512: #d84315;
+            --tile-1024: #bf360c;
+            --tile-2048: #ff5252;
+            --tile-4096: #d32f2f;
+            --tile-8192: #b71c1c;
+            --header-bg: #fff3e0;
+            --btn-bg: #e65100;
+            --btn-text: #fff;
+            --panel-bg: #fff;
+            --card-bg: #fff8f0;
+            --shadow: 0 4px 16px rgba(230, 81, 0, 0.2);
+            --tile-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        [data-theme="candy"] {
+            --bg: #fce4ec;
+            --board-bg: #c48b9d;
+            --text: #5d3a4a;
+            --text-light: #fff;
+            --tile-2: #f8bbd0;
+            --tile-4: #f48fb1;
+            --tile-8: #f06292;
+            --tile-16: #ec407a;
+            --tile-32: #e91e63;
+            --tile-64: #c2185b;
+            --tile-128: #ce93d8;
+            --tile-256: #ba68c8;
+            --tile-512: #ab47bc;
+            --tile-1024: #9c27b0;
+            --tile-2048: #7b1fa2;
+            --tile-4096: #ffab40;
+            --tile-8192: #ff6d00;
+            --header-bg: #fce4ec;
+            --btn-bg: #c2185b;
+            --btn-text: #fff;
+            --panel-bg: #fff;
+            --card-bg: #fef0f5;
+            --shadow: 0 4px 16px rgba(194, 24, 91, 0.2);
+            --tile-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 10px;
+            transition: background 0.4s ease, color 0.4s ease;
+            overflow: hidden; /* Disable page scroll completely */
+            overscroll-behavior: none; /* Prevent pull-to-refresh and bounce */
+            position: fixed; /* Prevent any scrolling */
+            width: 100%;
+            height: 100%;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            overflow-y: auto; /* allow internal scroll if needed, but we'll manage */
+            padding-bottom: 20px;
+            -webkit-overflow-scrolling: touch; /* smooth scroll for settings menu if it overflows */
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: var(--header-bg);
+            padding: 12px 14px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+        }
+        .game-title {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--tile-128), var(--tile-2048));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .scores {
+            display: flex;
+            gap: 8px;
+        }
+        .score-box {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            min-width: 55px;
+            transition: all 0.3s ease;
+        }
+        .score-box .score-val {
+            font-size: 1.2rem;
+            display: block;
+            line-height: 1;
+        }
+        .btn-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: all 0.2s ease;
+            font-family: var(--font);
+            white-space: nowrap;
+        }
+        .btn:active {
+            transform: scale(0.94);
+            opacity: 0.85;
+        }
+        .btn.small {
+            padding: 5px 9px;
+            font-size: 0.7rem;
+        }
+        .btn.outline {
+            background: transparent;
+            border: 2px solid var(--btn-bg);
+            color: var(--btn-bg);
+        }
+
+        /* Board */
+        .board-wrapper {
+            background: var(--board-bg);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            touch-action: none; /* disable browser gestures like swipe navigation */
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 8px;
+            aspect-ratio: 1;
+        }
+        .tile {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.6rem;
+            transition: all var(--transition);
+            position: relative;
+            box-shadow: var(--tile-shadow);
+            aspect-ratio: 1;
+            color: var(--text);
+        }
+        /* tile data-value styles unchanged... same as before */
+        .tile[data-value="2"] { background: var(--tile-2); }
+        .tile[data-value="4"] { background: var(--tile-4); }
+        .tile[data-value="8"] { background: var(--tile-8); color: #fff; }
+        .tile[data-value="16"] { background: var(--tile-16); color: #fff; }
+        .tile[data-value="32"] { background: var(--tile-32); color: #fff; }
+        .tile[data-value="64"] { background: var(--tile-64); color: #fff; }
+        .tile[data-value="128"] { background: var(--tile-128); color: #fff; font-size: 1.4rem; }
+        .tile[data-value="256"] { background: var(--tile-256); color: #fff; font-size: 1.4rem; }
+        .tile[data-value="512"] { background: var(--tile-512); color: #fff; font-size: 1.3rem; }
+        .tile[data-value="1024"] { background: var(--tile-1024); color: #fff; font-size: 1.1rem; }
+        .tile[data-value="2048"] { background: var(--tile-2048); color: #fff; font-size: 1.1rem; animation: glow 0.6s ease infinite alternate; }
+        .tile[data-value="4096"] { background: var(--tile-4096); color: #fff; font-size: 1rem; }
+        .tile[data-value="8192"] { background: var(--tile-8192); color: #fff; font-size: 0.9rem; }
+        .tile.new-tile { animation: popIn 0.2s ease; }
+        .tile.merged { animation: mergePop 0.25s ease; }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes mergePop {
+            0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px var(--tile-2048), 0 0 25px var(--tile-2048); }
+            100% { box-shadow: 0 0 20px var(--tile-2048), 0 0 45px var(--tile-2048); }
+        }
+
+        /* Settings Overlay */
+        .settings-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--modal-bg);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .settings-overlay.hidden {
+            display: none;
+        }
+        .settings-panel {
+            background: var(--panel-bg);
+            width: 90%;
+            max-width: 420px;
+            max-height: 85vh;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid #ddd;
+            background: var(--header-bg);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        .settings-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text);
+            padding: 0 5px;
+            line-height: 1;
+        }
+
+        /* Panels inside settings */
+        .panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+        }
+        .panel h3 {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-selector {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .theme-dot {
+            width: 32px; height: 32px; border-radius: 50%;
+            cursor: pointer; border: 3px solid transparent;
+            transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .theme-dot.active {
+            border-color: var(--text); transform: scale(1.15); box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+        }
+        .theme-dot.classic { background: #bbada0; }
+        .theme-dot.neon { background: #12122a; }
+        .theme-dot.forest { background: #5d8a5e; }
+        .theme-dot.ocean { background: #0277bd; }
+        .theme-dot.sunset { background: #bf5e3b; }
+        .theme-dot.candy { background: #c48b9d; }
+
+        .leaderboard-list {
+            list-style: none; display: flex; flex-direction: column; gap: 4px;
+            max-height: 200px; overflow-y: auto;
+        }
+        .leaderboard-list li {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 10px; border-radius: 6px; background: var(--panel-bg);
+            font-size: 0.85rem; font-weight: 600; transition: all 0.3s ease; gap: 8px;
+        }
+        .leaderboard-list li.user-rank {
+            background: var(--tile-128); color: #fff; font-weight: 800;
+            box-shadow: 0 0 12px rgba(237,207,114,0.5); animation: highlightRank 2s ease infinite;
+        }
+        @keyframes highlightRank {
+            0%,100%{ box-shadow:0 0 12px rgba(237,207,114,0.5); } 50%{ box-shadow:0 0 22px rgba(237,207,114,0.8); }
+        }
+        .rank-num { font-weight:900; width:24px; text-align:center; flex-shrink:0; }
+        .rank-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .rank-score { font-weight:800; flex-shrink:0; }
+        .rank-badge { font-size:1.1rem; flex-shrink:0; }
+
+        .challenge-card {
+            background: var(--panel-bg); padding: 12px; border-radius: 8px; text-align: center;
+            transition: all 0.3s ease;
+        }
+        .challenge-card .challenge-goal { font-size:1.3rem; font-weight:900; }
+        .challenge-card .challenge-progress { font-size:0.85rem; color:var(--btn-bg); font-weight:600; margin-top:4px; }
+        .challenge-completed { opacity:0.6; text-decoration: line-through; }
+        .badge-complete { display:inline-block; background:#4caf50; color:#fff; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; }
+
+        .achievements-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(44px,1fr));
+            gap: 6px; max-height: 180px; overflow-y: auto;
+        }
+        .ach-icon {
+            width:44px; height:44px; border-radius:10px; background:var(--panel-bg);
+            display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+            cursor:pointer; transition:all 0.3s ease; position:relative; border:2px solid transparent;
+        }
+        .ach-icon.unlocked { border-color:#ffd740; box-shadow:0 0 8px rgba(255,215,64,0.5); animation:achGlow 1.5s ease infinite; }
+        .ach-icon.locked { opacity:0.4; filter:grayscale(0.8); }
+        @keyframes achGlow {
+            0%,100%{ box-shadow:0 0 8px rgba(255,215,64,0.5); } 50%{ box-shadow:0 0 16px rgba(255,215,64,0.9); }
+        }
+        .ach-tooltip {
+            display:none; position:absolute; bottom:110%; background:#333; color:#fff; font-size:0.7rem;
+            padding:5px 8px; border-radius:4px; white-space:nowrap; z-index:10; pointer-events:none;
+            text-align:center; font-weight:600;
+        }
+        .ach-icon:active .ach-tooltip, .ach-icon:hover .ach-tooltip { display:block; }
+
+        /* Game over overlay */
+        .overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: var(--modal-bg); display:flex; align-items:center; justify-content:center;
+            z-index:100; animation: fadeIn 0.3s ease;
+        }
+        .overlay.hidden { display:none; }
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+        .overlay-content {
+            background:var(--panel-bg); padding:24px; border-radius:16px; text-align:center;
+            max-width:320px; width:90%; box-shadow:0 10px 40px rgba(0,0,0,0.3);
+        }
+        .overlay-content h2 { font-size:1.6rem; margin-bottom:8px; }
+        .overlay-content .final-score { font-size:2.5rem; font-weight:900; color:var(--tile-2048); }
+
+        .toast {
+            position:fixed; top:20px; left:50%; transform:translateX(-50%);
+            background:#333; color:#fff; padding:10px 20px; border-radius:20px;
+            font-weight:700; z-index:200; animation: slideDown 0.4s ease, fadeOut 0.5s ease 2s forwards;
+            pointer-events:none; font-size:0.9rem;
+        }
+        @keyframes slideDown {
+            from{ transform:translateX(-50%) translateY(-60px); opacity:0; }
+            to{ transform:translateX(-50%) translateY(0); opacity:1; }
+        }
+        @keyframes fadeOut {
+            to{ opacity:0; transform:translateX(-50%) translateY(-30px); }
+        }
+
+        ::-webkit-scrollbar { width:4px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:#ccc; border-radius:4px; }
+
+        @media (max-width:360px) {
+            .tile { font-size:1.2rem; }
+            .tile[data-value="128"], .tile[data-value="256"] { font-size:1rem; }
+            .tile[data-value="512"] { font-size:0.9rem; }
+            .tile[data-value="1024"], .tile[data-value="2048"] { font-size:0.75rem; }
+            .game-title { font-size:1.5rem; }
+            .btn { padding:6px 9px; font-size:0.7rem; }
+            .score-box { padding:5px 8px; font-size:0.65rem; }
+            .score-box .score-val { font-size:1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- Header -->
+    <div class="header">
+        <span class="game-title">2048</span>
+        <div class="scores">
+            <div class="score-box">Счёт<span class="score-val" id="score">0</span></div>
+            <div class="score-box">Рекорд<span class="score-val" id="bestScore">0</span></div>
+        </div>
+        <div class="btn-row">
+            <button class="btn small" id="btnNewGame" title="Новая игра">🔄</button>
+            <button class="btn small" id="btnUndo" title="Отменить ход">↩</button>
+            <button class="btn small" id="btnSettings" title="Настройки и статистика">⚙️</button>
+        </div>
+    </div>
+
+    <!-- Board -->
+    <div class="board-wrapper" id="boardWrapper">
+        <div class="board" id="board"></div>
+    </div>
+</div>
+
+<!-- Settings Overlay (contains all other panels) -->
+<div class="settings-overlay hidden" id="settingsOverlay">
+    <div class="settings-panel">
+        <div class="settings-header">
+            <span>⚙️ Меню настроек</span>
+            <button class="close-btn" id="closeSettingsBtn">✕</button>
+        </div>
+        <div class="settings-content">
+            <!-- Themes -->
+            <div class="panel">
+                <h3>🎨 Темы</h3>
+                <div class="theme-selector" id="themeSelector">
+                    <span class="theme-dot classic active" data-theme="classic" title="Классика"></span>
+                    <span class="theme-dot neon" data-theme="neon" title="Неон"></span>
+                    <span class="theme-dot forest" data-theme="forest" title="Лес"></span>
+                    <span class="theme-dot ocean" data-theme="ocean" title="Океан"></span>
+                    <span class="theme-dot sunset" data-theme="sunset" title="Закат"></span>
+                    <span class="theme-dot candy" data-theme="candy" title="Карамель"></span>
+                </div>
+            </div>
+
+            <!-- Daily Challenge -->
+            <div class="panel" id="dailyChallengePanel">
+                <h3>📅 Ежедневный челлендж</h3>
+                <div class="challenge-card" id="challengeCard">
+                    <div class="challenge-goal" id="challengeGoal">—</div>
+                    <div class="challenge-progress" id="challengeProgress"></div>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="panel">
+                <h3>🏆 Таблица лидеров</h3>
+                <ul class="leaderboard-list" id="leaderboardList"></ul>
+            </div>
+
+            <!-- Achievements -->
+            <div class="panel">
+                <h3>🏅 Достижения <span style="font-weight:400;font-size:0.8rem;" id="achCount">0/25</span></h3>
+                <div class="achievements-grid" id="achievementsGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Game Over Overlay -->
+<div class="overlay hidden" id="gameOverOverlay">
+    <div class="overlay-content">
+        <h2>🎮 Игра окончена!</h2>
+        <p>Ваш счёт:</p>
+        <div class="final-score" id="finalScore">0</div>
+        <p style="margin:8px 0;font-size:0.85rem;" id="finalTile"></p>
+        <button class="btn" id="btnRestart" style="margin-top:10px;font-size:1rem;padding:10px 24px;">Играть снова</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ==================== STORAGE ====================
+        const STORAGE_KEY = 'super2048_data';
+        let storageData = {};
+
+        function loadStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                storageData = raw ? JSON.parse(raw) : {};
+            } catch (e) { storageData = {}; }
+            storageData.bestScore = storageData.bestScore || 0;
+            storageData.theme = storageData.theme || 'classic';
+            storageData.achievements = storageData.achievements || {};
+            storageData.gamesPlayed = storageData.gamesPlayed || 0;
+            storageData.dailyChallenges = storageData.dailyChallenges || {};
+            storageData.themesUsed = storageData.themesUsed || ['classic'];
+            storageData.totalMovesAllTime = storageData.totalMovesAllTime || 0;
+            storageData.bestTile = storageData.bestTile || 0;
+            storageData.userName = storageData.userName || 'Игрок';
+        }
+
+        function saveStorage() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storageData)); } catch (e) {}
+        }
+        loadStorage();
+
+        // ==================== THEME ====================
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            storageData.theme = theme;
+            if (!storageData.themesUsed.includes(theme)) {
+                storageData.themesUsed.push(theme);
+                checkAchievement('collector');
+            }
+            saveStorage();
+            updateThemeDots();
+            const metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (metaTheme) {
+                const colors = { classic:'#faf8ef', neon:'#0a0a0f', forest:'#e8f5e9', ocean:'#e0f7fa', sunset:'#fff3e0', candy:'#fce4ec' };
+                metaTheme.setAttribute('content', colors[theme] || '#faf8ef');
+            }
+        }
+
+        function updateThemeDots() {
+            document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.theme === storageData.theme));
+        }
+
+        // ==================== 2048 GAME LOGIC ====================
+        let grid = [];
+        let score = 0;
+        let bestScore = storageData.bestScore;
+        let gameOver = false;
+        let won = false;
+        let movesThisGame = 0;
+        let highestTileThisGame = 0;
+        let undoStack = [];
+        let mergedThisMove = 0;
+        let moveStartTime = 0;
+
+        function initGrid() {
+            grid = Array.from({length:4}, ()=>Array(4).fill(0));
+            score = 0; gameOver = false; won = false; movesThisGame = 0; highestTileThisGame = 0;
+            undoStack = []; mergedThisMove = 0; moveStartTime = Date.now();
+            addRandomTile(); addRandomTile();
+            updateUI();
+            document.getElementById('gameOverOverlay').classList.add('hidden');
+        }
+
+        function addRandomTile() {
+            const empty = [];
+            for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]===0) empty.push({r,c});
+            if(empty.length===0) return;
+            const pos = empty[Math.floor(Math.random()*empty.length)];
+            grid[pos.r][pos.c] = Math.random()<0.9 ? 2 : 4;
+        }
+
+        function cloneGrid(g) { return g.map(row=>[...row]); }
+
+        function slideRow(row) {
+            let arr = row.filter(v=>v!==0);
+            let merged = []; let mergeScore = 0; let i=0;
+            while(i<arr.length){
+                if(i+1<arr.length && arr[i]===arr[i+1]){
+                    const val = arr[i]*2; merged.push(val); mergeScore+=val; i+=2;
+                }else{ merged.push(arr[i]); i++; }
+            }
+            while(merged.length<4) merged.push(0);
+            return {row:merged, score:mergeScore};
+        }
+
+        function countMerges(original, newRow){
+            let origNonZero = original.filter(v=>v!==0);
+            let newNonZero = newRow.filter(v=>v!==0);
+            let merges=0; let oi=0,ni=0;
+            while(ni<newNonZero.length && oi<origNonZero.length){
+                if(newNonZero[ni]===origNonZero[oi]*2 && oi+1<origNonZero.length && origNonZero[oi]===origNonZero[oi+1]){
+                    merges++; oi+=2; ni++;
+                }else if(newNonZero[ni]===origNonZero[oi]){ oi++; ni++; }
+                else{ ni++; }
+            }
+            return merges;
+        }
+
+        function move(direction) {
+            if(gameOver) return false;
+            const oldGrid = cloneGrid(grid);
+            let totalScore=0; let totalMerges=0;
+            const newGrid = Array.from({length:4},()=>Array(4).fill(0));
+
+            if(direction==='left'){
+                for(let r=0;r<4;r++){ const res=slideRow(grid[r]); newGrid[r]=res.row; totalScore+=res.score; totalMerges+=countMerges(grid[r],res.row); }
+            }else if(direction==='right'){
+                for(let r=0;r<4;r++){ const reversed=[...grid[r]].reverse(); const res=slideRow(reversed); newGrid[r]=res.row.reverse(); totalScore+=res.score; totalMerges+=countMerges(reversed,res.row); }
+            }else if(direction==='up'){
+                for(let c=0;c<4;c++){ const col=[grid[0][c],grid[1][c],grid[2][c],grid[3][c]]; const res=slideRow(col); for(let r=0;r<4;r++) newGrid[r][c]=res.row[r]; totalScore+=res.score; totalMerges+=countMerges(col,res.row); }
+            }else if(direction==='down'){
+                for(let c=0;c<4;c++){ const col=[grid[3][c],grid[2][c],grid[1][c],grid[0][c]]; const res=slideRow(col); const rev=res.row.reverse(); for(let r=0;r<4;r++) newGrid[r][c]=rev[r]; totalScore+=res.score; totalMerges+=countMerges(col,res.row); }
+            }
+
+            let changed=false;
+            for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]!==newGrid[r][c]) changed=true;
+            if(!changed) return false;
+
+            undoStack.push({grid:cloneGrid(grid), score:score, highestTileThisGame:highestTileThisGame, movesThisGame:movesThisGame});
+            if(undoStack.length>10) undoStack.shift();
+
+            grid = newGrid; score += totalScore; mergedThisMove = totalMerges;
+            movesThisGame++; storageData.totalMovesAllTime = (storageData.totalMovesAllTime||0)+1;
+            addRandomTile(); updateHighestTile();
+            if(score>bestScore){ bestScore=score; storageData.bestScore=bestScore; checkAchievement('score_'+bestScore); }
+            if(highestTileThisGame>(storageData.bestTile||0)) storageData.bestTile=highestTileThisGame;
+            saveStorage(); updateUI();
+
+            const now=Date.now();
+            if(now-moveStartTime<120000 && movesThisGame>=50) checkAchievement('speed_demon');
+            if(totalMerges>=4) checkAchievement('combo_king');
+            if(movesThisGame<=20 && highestTileThisGame>=256) checkAchievement('perfect_start');
+            if(score%1000===777 || score%1000===77) checkAchievement('lucky7');
+
+            if(isGameOver()){
+                gameOver=true; storageData.gamesPlayed=(storageData.gamesPlayed||0)+1;
+                checkAchievement('games_'+storageData.gamesPlayed);
+                if(score<100 && storageData.gamesPlayed>=1) checkAchievement('noob');
+                saveStorage(); updateUI();
+                setTimeout(()=>showGameOver(),500);
+            }
+            if(!won && highestTileThisGame>=2048){ won=true; checkAchievement('tile_2048'); }
+            checkTileAchievements();
+            if(highestTileThisGame>=2048 && hasTile(1024)) checkAchievement('tile_master');
+            updateDailyChallenge();
+            return true;
+        }
+
+        function hasTile(value){ for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]===value) return true; return false; }
+        function updateHighestTile(){ for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]>highestTileThisGame) highestTileThisGame=grid[r][c]; }
+        function isGameOver(){
+            for(let r=0;r<4;r++) for(let c=0;c<4;c++){ if(grid[r][c]===0) return false; if(c<3&&grid[r][c]===grid[r][c+1]) return false; if(r<3&&grid[r][c]===grid[r+1][c]) return false; }
+            return true;
+        }
+        function undo(){ if(gameOver||undoStack.length===0) return; const prev=undoStack.pop(); grid=prev.grid; score=prev.score; highestTileThisGame=prev.highestTileThisGame; movesThisGame=prev.movesThisGame; updateUI(); }
+        function showGameOver(){ document.getElementById('finalScore').textContent=score; document.getElementById('finalTile').textContent='Лучшая плитка: '+highestTileThisGame; document.getElementById('gameOverOverlay').classList.remove('hidden'); updateLeaderboard(); }
+        function checkTileAchievements(){ [256,512,1024,2048,4096].forEach(t=>{ if(highestTileThisGame>=t) checkAchievement('tile_'+t); }); if(highestTileThisGame>=512) checkAchievement('getting_there'); if(highestTileThisGame>=1024) checkAchievement('halfway'); }
+
+        function updateUI(){ document.getElementById('score').textContent=score; document.getElementById('bestScore').textContent=bestScore; renderBoard(); updateDailyChallengeUI(); }
+        function renderBoard(){
+            const board=document.getElementById('board'); board.innerHTML='';
+            for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+                const tile=document.createElement('div'); tile.className='tile'; const val=grid[r][c];
+                if(val>0){ tile.dataset.value=val; tile.textContent=val; } board.appendChild(tile);
+            }
+        }
+
+        // ==================== ACHIEVEMENTS ====================
+        const achievementDefs = [
+            {id:'first_move',icon:'👆',name:'Первый ход',desc:'Сделать первый ход'},
+            {id:'tile_256',icon:'🔷',name:'Плитка 256',desc:'Создать плитку 256'},
+            {id:'tile_512',icon:'🔶',name:'Плитка 512',desc:'Создать плитку 512'},
+            {id:'tile_1024',icon:'⭐',name:'Плитка 1024',desc:'Создать плитку 1024'},
+            {id:'tile_2048',icon:'🏆',name:'Победа!',desc:'Создать плитку 2048'},
+            {id:'tile_4096',icon:'👑',name:'Мастер 4096',desc:'Создать плитку 4096'},
+            {id:'score_1000',icon:'💯',name:'Тысячник',desc:'Набрать 1000 очков'},
+            {id:'score_5000',icon:'🔥',name:'Пятёрка',desc:'Набрать 5000 очков'},
+            {id:'score_10000',icon:'💎',name:'Десятка',desc:'Набрать 10000 очков'},
+            {id:'score_20000',icon:'🚀',name:'High Roller',desc:'Набрать 20000 очков'},
+            {id:'score_50000',icon:'🌟',name:'Легенда',desc:'Набрать 50000 очков'},
+            {id:'speed_demon',icon:'⚡',name:'Спид-демон',desc:'50 ходов за 2 минуты'},
+            {id:'combo_king',icon:'💥',name:'Комбо-король',desc:'4+ слияний за ход'},
+            {id:'games_5',icon:'🎯',name:'Постоянство',desc:'Сыграть 5 игр'},
+            {id:'games_20',icon:'🎖️',name:'Преданность',desc:'Сыграть 20 игр'},
+            {id:'games_50',icon:'🏅',name:'Марафонец',desc:'Сыграть 50 игр'},
+            {id:'daily_3',icon:'📅',name:'Ежедневный игрок',desc:'3 дневных челленджа'},
+            {id:'daily_7',icon:'📆',name:'Недельный воин',desc:'7 дневных челленджей'},
+            {id:'collector',icon:'🎨',name:'Коллекционер',desc:'Использовать все 6 тем'},
+            {id:'tile_master',icon:'🧩',name:'Мастер плиток',desc:'2048 и 1024 в одной игре'},
+            {id:'perfect_start',icon:'🎪',name:'Идеальный старт',desc:'256 за первые 20 ходов'},
+            {id:'lucky7',icon:'🍀',name:'Счастливая 7',desc:'Счёт заканчивается на 777'},
+            {id:'noob',icon:'🐣',name:'Новичок',desc:'Проиграть со счётом <100'},
+            {id:'getting_there',icon:'📈',name:'Уже близко',desc:'Достичь плитки 512'},
+            {id:'halfway',icon:'🛤️',name:'Полпути',desc:'Достичь плитки 1024'},
+        ];
+
+        function checkAchievement(id){
+            if(storageData.achievements[id]) return;
+            storageData.achievements[id]=Date.now(); saveStorage();
+            showToast('🏅 Достижение: '+(achievementDefs.find(a=>a.id===id)?.name||id));
+            renderAchievements();
+        }
+        function renderAchievements(){
+            const gridEl=document.getElementById('achievementsGrid'); gridEl.innerHTML='';
+            const unlockedCount=Object.keys(storageData.achievements).length;
+            document.getElementById('achCount').textContent=unlockedCount+'/'+achievementDefs.length;
+            achievementDefs.forEach(a=>{
+                const div=document.createElement('div');
+                div.className='ach-icon '+(storageData.achievements[a.id]?'unlocked':'locked');
+                div.innerHTML=`<span>${a.icon}</span><span class="ach-tooltip">${a.name}\n${a.desc}</span>`;
+                div.addEventListener('click',()=>{
+                    if(storageData.achievements[a.id]) showToast('🏅 '+a.name+': '+a.desc+' (получено '+new Date(storageData.achievements[a.id]).toLocaleDateString()+')');
+                    else showToast('🔒 '+a.name+': '+a.desc+' (не получено)');
+                });
+                gridEl.appendChild(div);
+            });
+        }
+
+        // ==================== LEADERBOARD ====================
+        const botProfiles = [
+            {name:'ProGamer42',baseScore:48500,icon:'🤖'},{name:'TileMasterX',baseScore:42300,icon:'👾'},
+            {name:'SwiftFingers',baseScore:38700,icon:'🎮'},{name:'NumberNinja',baseScore:35200,icon:'🥷'},
+            {name:'MergeQueen',baseScore:31800,icon:'👸'},{name:'PixelPusher',baseScore:27900,icon:'🕹️'},
+            {name:'GridGuru',baseScore:24100,icon:'🧠'},{name:'SlideLord',baseScore:20500,icon:'⚔️'},
+            {name:'ComboCrasher',baseScore:17200,icon:'💫'},{name:'TileTitan',baseScore:13900,icon:'🦾'},
+        ];
+        function getBotScore(bot,daySeed){ const variance=Math.floor(((Math.sin(bot.baseScore*daySeed*0.017)*0.5+0.5)*6000)-3000); return Math.max(1000,bot.baseScore+variance); }
+        function updateLeaderboard(){
+            const daySeed=Math.floor(Date.now()/86400000); const userBest=storageData.bestScore||0;
+            const entries=botProfiles.map(bot=>({name:bot.name,score:getBotScore(bot,daySeed),icon:bot.icon,isUser:false}));
+            if(userBest>0) entries.push({name:storageData.userName||'Игрок',score:userBest,icon:'👤',isUser:true});
+            entries.sort((a,b)=>b.score-a.score);
+            let displayEntries=entries.slice(0,10);
+            const userEntry=entries.find(e=>e.isUser);
+            if(userEntry&&!displayEntries.includes(userEntry)) displayEntries.push(userEntry);
+            displayEntries.sort((a,b)=>b.score-a.score);
+            const list=document.getElementById('leaderboardList'); list.innerHTML='';
+            const rankEmojis=['🥇','🥈','🥉'];
+            displayEntries.forEach((entry,i)=>{
+                const li=document.createElement('li'); if(entry.isUser) li.className='user-rank';
+                const rank=displayEntries.indexOf(entry)+1;
+                const rankDisplay=rank<=3?rankEmojis[rank-1]:'#'+rank;
+                li.innerHTML=`<span class="rank-num">${rankDisplay}</span><span class="rank-badge">${entry.icon}</span><span class="rank-name">${entry.name}${entry.isUser?' (Вы)':''}</span><span class="rank-score">${entry.score.toLocaleString()}</span>`;
+                list.appendChild(li);
+            });
+        }
+
+        // ==================== DAILY CHALLENGE ====================
+        function getDailySeed(){ const d=new Date(); return d.getFullYear()*1000+d.getMonth()*50+d.getDate(); }
+        function seededRandom(seed){ let s=seed; return function(){ s=(s*16807+0)%2147483647; return (s-1)/2147483646; }; }
+        function getDailyChallenge(){
+            const seed=getDailySeed(); const rand=seededRandom(seed);
+            const types=[
+                {type:'score', goal:()=>Math.floor(rand()*4000+1500), desc:(g)=>`Набрать ${g.toLocaleString()} очков`, measure:()=>score},
+                {type:'tile', goal:()=>[128,256,512,1024][Math.floor(rand()*4)], desc:(g)=>`Создать плитку ${g}`, measure:()=>highestTileThisGame},
+                {type:'moves', goal:()=>Math.floor(rand()*30+20), desc:(g)=>`Сделать ${g} ходов`, measure:()=>movesThisGame},
+                {type:'merges_in_move', goal:()=>Math.floor(rand()*3+3), desc:(g)=>`${g}+ слияний за один ход`, measure:()=>mergedThisMove},
+            ];
+            const idx=Math.floor(rand()*types.length); const chosen=types[idx]; const goal=chosen.goal();
+            return {type:chosen.type, goal:goal, desc:chosen.desc(goal), measure:chosen.measure, seed:seed};
+        }
+        function updateDailyChallenge(){
+            const challenge=getDailyChallenge(); const todayKey='dc_'+getDailySeed();
+            const completed=storageData.dailyChallenges[todayKey]; const progress=challenge.measure();
+            if(progress>=challenge.goal && !completed){
+                storageData.dailyChallenges[todayKey]=true; saveStorage();
+                const totalDC=Object.keys(storageData.dailyChallenges).filter(k=>k.startsWith('dc_')).length;
+                if(totalDC>=3) checkAchievement('daily_3'); if(totalDC>=7) checkAchievement('daily_7');
+                showToast('✅ Челлендж дня выполнен!');
+            }
+            updateDailyChallengeUI();
+        }
+        function updateDailyChallengeUI(){
+            const challenge=getDailyChallenge(); const todayKey='dc_'+getDailySeed();
+            const completed=storageData.dailyChallenges[todayKey]; const progress=challenge.measure();
+            document.getElementById('challengeGoal').textContent=challenge.desc;
+            document.getElementById('challengeProgress').textContent= (progress>=challenge.goal)?'✅ Выполнено!':`Прогресс: ${Math.min(progress,challenge.goal).toLocaleString()} / ${challenge.goal.toLocaleString()}`;
+            const card=document.getElementById('challengeCard');
+            card.classList.toggle('challenge-completed', !!(progress>=challenge.goal||completed));
+        }
+
+        // ==================== TOAST ====================
+        function showToast(msg){
+            const existing=document.querySelector('.toast'); if(existing) existing.remove();
+            const toast=document.createElement('div'); toast.className='toast'; toast.textContent=msg;
+            document.body.appendChild(toast); setTimeout(()=>toast.remove(),2500);
+        }
+
+        // ==================== EVENT HANDLERS ====================
+        let touchStartX=0, touchStartY=0;
+        const boardWrapper=document.getElementById('boardWrapper');
+
+        boardWrapper.addEventListener('touchstart',(e)=>{ touchStartX=e.touches[0].clientX; touchStartY=e.touches[0].clientY; },{passive:true});
+        boardWrapper.addEventListener('touchmove',(e)=>{ e.preventDefault(); },{passive:false}); // prevent page scroll when swiping on board
+        boardWrapper.addEventListener('touchend',(e)=>{
+            if(gameOver) return;
+            const dx=e.changedTouches[0].clientX-touchStartX;
+            const dy=e.changedTouches[0].clientY-touchStartY;
+            if(Math.max(Math.abs(dx),Math.abs(dy))<30) return;
+            if(Math.abs(dx)>Math.abs(dy)) handleMove(dx>0?'right':'left');
+            else handleMove(dy>0?'down':'up');
+        });
+
+        document.addEventListener('keydown',(e)=>{
+            if(gameOver && e.key!=='r' && e.key!=='R') return;
+            const keys={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};
+            if(keys[e.key]){ e.preventDefault(); handleMove(keys[e.key]); }
+        });
+
+        function handleMove(dir){
+            const moved=move(dir);
+            if(moved && movesThisGame===1) checkAchievement('first_move');
+            if(moved){ updateDailyChallenge(); updateLeaderboard(); }
+        }
+
+        document.getElementById('btnNewGame').addEventListener('click',()=>{
+            if(score>0 && !gameOver){ storageData.gamesPlayed=(storageData.gamesPlayed||0)+1; checkAchievement('games_'+storageData.gamesPlayed); saveStorage(); }
+            initGrid(); updateLeaderboard(); showToast('🔄 Новая игра!');
+        });
+        document.getElementById('btnUndo').addEventListener('click',()=>{
+            if(undoStack.length===0){ showToast('⚠️ Нет ходов для отмены'); return; }
+            undo(); showToast('↩ Ход отменён');
+        });
+        document.getElementById('btnRestart').addEventListener('click',()=>{ initGrid(); updateLeaderboard(); });
+
+        // Settings overlay
+        const settingsOverlay = document.getElementById('settingsOverlay');
+        document.getElementById('btnSettings').addEventListener('click',()=>{
+            settingsOverlay.classList.remove('hidden');
+            updateLeaderboard(); renderAchievements(); updateDailyChallengeUI(); // refresh when opened
+        });
+        document.getElementById('closeSettingsBtn').addEventListener('click',()=> settingsOverlay.classList.add('hidden'));
+        settingsOverlay.addEventListener('click',function(e){ if(e.target===this) this.classList.add('hidden'); });
+
+        // Game over overlay close
+        document.getElementById('gameOverOverlay').addEventListener('click',function(e){ if(e.target===this){ this.classList.add('hidden'); initGrid(); updateLeaderboard(); } });
+
+        // Theme selector
+        document.getElementById('themeSelector').addEventListener('click',(e)=>{
+            const dot=e.target.closest('.theme-dot'); if(!dot) return;
+            applyTheme(dot.dataset.theme); showToast('🎨 Тема: '+dot.dataset.theme.charAt(0).toUpperCase()+dot.dataset.theme.slice(1));
+        });
+
+        // ==================== PWA ====================
+        function setupPWA(){
+            const manifest={name:'2048 Супер-Пупер',short_name:'2048 SP',start_url:location.href.split('?')[0],display:'standalone',orientation:'portrait',background_color:'#faf8ef',theme_color:'#1a1a2e',icons:[{src:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192"><rect width="192" height="192" rx="32" fill="#bbada0"/><text x="96" y="130" text-anchor="middle" font-size="100" font-weight="900" fill="#fff" font-family="sans-serif">2048</text></svg>'),sizes:'192x192',type:'image/svg+xml',purpose:'any maskable'}]};
+            const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+            document.getElementById('manifest-link').href=URL.createObjectURL(blob);
+            if('serviceWorker' in navigator){
+                const swCode=`const CACHE_NAME='super2048-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(['/']).catch(()=>{})));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const clone=resp.clone();caches.open(CACHE_NAME).then(c=>c.put(e.request,clone));}return resp;}).catch(()=>caches.match(e.request))));});`;
+                const swBlob=new Blob([swCode],{type:'application/javascript'});
+                navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+            }
+        }
+
+        // ==================== INIT ====================
+        function init(){
+            applyTheme(storageData.theme);
+            initGrid(); updateLeaderboard(); renderAchievements(); updateDailyChallengeUI();
+            setupPWA(); moveStartTime=Date.now();
+            // retrospective checks
+            if(storageData.bestScore>=1000) checkAchievement('score_1000'); if(storageData.bestScore>=5000) checkAchievement('score_5000');
+            if(storageData.bestScore>=10000) checkAchievement('score_10000'); if(storageData.bestScore>=20000) checkAchievement('score_20000');
+            if(storageData.bestScore>=50000) checkAchievement('score_50000'); if(storageData.bestTile>=256) checkAchievement('tile_256');
+            if(storageData.bestTile>=512) checkAchievement('tile_512'); if(storageData.bestTile>=1024) checkAchievement('tile_1024');
+            if(storageData.bestTile>=2048) checkAchievement('tile_2048'); if(storageData.bestTile>=4096) checkAchievement('tile_4096');
+            if(storageData.gamesPlayed>=5) checkAchievement('games_5'); if(storageData.gamesPlayed>=20) checkAchievement('games_20');
+            if(storageData.gamesPlayed>=50) checkAchievement('games_50'); if(storageData.themesUsed?.length>=6) checkAchievement('collector');
+            const totalDC=Object.keys(storageData.dailyChallenges||{}).filter(k=>k.startsWith('dc_')).length;
+            if(totalDC>=3) checkAchievement('daily_3'); if(totalDC>=7) checkAchievement('daily_7');
+        }
+        init();
+    })();
+</script>
+</body>
+</html>
